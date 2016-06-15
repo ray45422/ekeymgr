@@ -1,4 +1,4 @@
-class Rc620:
+class Rc620s:
 	def __init__(self,serial):
 		self.serial=serial
 
@@ -27,15 +27,14 @@ class Rc620:
 			sum+=data[i]
 		r=0b11111111-(sum & 0b11111111)+1
 		return r
-	
+
 	def writeCommand(self,buf):
 		self.serial.write(buf)
 		self.printData(buf)
-	
+
 	def printData(self,data):
 		str=""
 		for v in data:
 			tmp="%x" % v
 			str=str+"\\x"+tmp
 		print(str)
-
