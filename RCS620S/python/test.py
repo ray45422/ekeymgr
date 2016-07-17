@@ -1,9 +1,9 @@
 #! /usr/bin/python
 import serial
-import rc620s
-s = serial.Serial("/dev/ttyAMA0", 115200)
-s.timeout = 0.5
-r = rc620s.Rc620s(s)
+import rcs620s
+s = serial.Serial("/dev/ttyACM0", 115200)
+s.timeout = 1
+r = rcs620s.Rc620s(s)
 
 p = [0xd4, 0x32, 0x02, 0x00, 0x00, 0x00]
 str = r.rwCommand(p)
