@@ -5,7 +5,7 @@
 		"ray45422"
 	],
 	"dependencies": {
-		"onyx-serial": "~>0.5.0"
+		"serial-port": "~>1.1.0"
 	},
 	"description": "RCS620S library",
 	"copyright": "Copyright © 2016, ray45422",
