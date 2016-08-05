@@ -4,9 +4,7 @@ import serial.device;
 import serial.rcs620s;
 void main()
 {
-	auto port = new SerialPort("/dev/ttyACM0", dur!("msecs")(10), dur!("msecs")(10));
-	port.speed(BaudRate.BR_115200);
-	auto rcs620s = new RCS620S(port);
+	auto rcs620s = new RCS620S("/dev/ttyACM0");
 
 	Thread.sleep(dur!("seconds")(2));//Arduinoのリセット待ち
 	"start init".writeln;
@@ -14,5 +12,5 @@ void main()
 		Thread.sleep(dur!("msecs")(500));
 	}
 	"init success".writeln;
-	port.close();
+	rcs620s.close();
 }
