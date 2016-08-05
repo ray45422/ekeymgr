@@ -10,32 +10,38 @@ class RCS620S{
 		this.port=port;
 	}
 	bool init(){
-		ubyte[] test = [0xd4, 0x32, 0x02, 0x00, 0x00, 0x00];
-		ubyte [20] a;
-		ulong ret = 0;
-		rwCommand(test);
-		try{
-			ret=port.read(a);
-		}catch(TimeoutException e){
-			"data num:".write;
-			ret.writeln;
-			e.writeln();
+		ubyte[] command = [0xd4, 0x32, 0x02, 0x00, 0x00, 0x00];
+		ubyte[] buf = rwCommand(command);
+		if(buf.length==0){
 			return false;
 		}
 		return true;
 	}
-	string rwCommand(ubyte[] command){
+	ubyte[] rwCommand(ubyte[] command){
 		if(command.length <= 255){
-			ubyte[] buf = [0x00, 0x00, 0xff, command.length.to!ubyte];
+			ubyte[] buf = [0x00, 0x00, 0xff, cast(ubyte)command.length];
+			command = buf ~ command;
+			buf = [calcDCS(command),0x00];
+			command = command ~ buf;
+			port.write(command);
+			ubyte[256] read;
+			ulong readed;
+			try{
+				readed=port.read(read);
+			}catch(TimeoutException e){
+				return [];
+			}
+			buf = read[0..readed];
+			return buf;
 		}
-		return "yet";
+		return [];
 	}
-	private ubyte calcDCS(byte[] data){
-		int length = data.length.to!int;
+	private ubyte calcDCS(ubyte[] data){
+		ulong length = data.length.to!int;
 		byte sum = 0;
-		for(int i=0;i<length;++i){
+		for(ulong i=0;i<length;++i){
 			sum += data[i];
 		}
-		return -(sum & 0xff).to!ubyte;
+		return cast(ubyte)-(sum & 0xff);
 	}
 }
