@@ -1,0 +1,7 @@
+dub.selections.json
+librcs620s.a
+.dub
+docs.json
+__dummy.html
+*.o
+*.obj
