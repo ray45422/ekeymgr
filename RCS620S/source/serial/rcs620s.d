@@ -32,14 +32,14 @@ class RCS620S{
 			buf = [dcs,0x00];
 			command = command ~ buf;
 			port.write(command);
-			ubyte[256] read;
+			buf = new ubyte[256];
 			ulong readed;
 			try{
-				readed = port.read(read);
+				readed = port.read(buf);
 			}catch(TimeoutException e){
 				return [];
 			}
-			buf = read[0..readed];
+			buf = buf[0..readed];
 			return buf;
 		}else{
 			/* extended frame*/
