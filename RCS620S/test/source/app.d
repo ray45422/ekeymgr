@@ -12,5 +12,15 @@ void main()
 		Thread.sleep(dur!("msecs")(500));
 	}
 	"init success".writeln;
+	"polling start".writeln;
+	while(!rcs620s.polling()){
+		Thread.sleep(dur!("msecs")(500));
+		rcs620s.rfOff();
+	}
+	"polling success".writeln;
+	"id:".write;
+	rcs620s.writeArray(rcs620s.idm);
+	"pmm:".write;
+	rcs620s.writeArray(rcs620s.pmm);
 	rcs620s.close();
 }

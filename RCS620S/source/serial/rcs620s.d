@@ -6,6 +6,9 @@ import core.thread;
 import serial.device;
 
 class RCS620S{
+	ubyte[8] idm;
+	ubyte[8] pmm;
+	ulong timeout;
 	private const uint RCS620S_DEFAULT_TIMEOUT = 1000;
 	private const uint RCS620S_MAX_CARD_RESPONSE_LEN = 254;
 	private const uint RCS620S_MAX_RW_RESPONSE_LEN = 265;
@@ -16,6 +19,7 @@ class RCS620S{
 	this(SerialPort port){
 		this.port=port;
 		this.port.speed(BaudRate.BR_115200);
+		this.timeout = RCS620S_DEFAULT_TIMEOUT;
 	}
 	bool init(){
 		ubyte[] ret;
@@ -25,25 +29,46 @@ class RCS620S{
 		if(ret.length == 0 || ret.length !=2 || !cmp(ret, [0xd5, 0x33], 2)){
 			return false;
 		}
-		"v:".write;
-		writeArray(ret);
 		/* RFConfiguration (max retries) */
 		ret = rwCommand([0xd4, 0x32, 0x05, 0x00, 0x00, 0x00]);
 		if(ret.length == 0 || ret.length !=2 || !cmp(ret, [0xd5, 0x33], 2)){
 			return false;
 		}
-		"r:".write;
-		writeArray(ret);
 		/* RFConfiguration (additional wait time = 24ms) */
 		ret = rwCommand([0xd4, 0x32, 0x81, 0xb7]);
 		if(ret.length == 0 || ret.length !=2 || !cmp(ret, [0xd5, 0x33], 2)){
 			return false;
 		}
-		"w:".write;
-		writeArray(ret);
 		return true;
 	}
-	ubyte[] rwCommand(ubyte[] command){
+	bool polling(uint systemCode = 0xffff){
+		ubyte[] response;
+		/* InListPassiveTarget */
+		ubyte[9] buf = [0xd4, 0x4a, 0x01, 0x01, 0x00, 0xff, 0xff, 0x00, 0x00];
+		buf[5] = cast(ubyte)((systemCode >> 8) & 0xff);
+		buf[6] = cast(ubyte)((systemCode >> 0) & 0xff);
+
+		response = rwCommand(buf);
+		if(response.length == 0 || response.length != 22 || !cmp(response, [0xd5, 0x4b, 0x01, 0x01, 0x12, 0x01], 6)){
+			return false;
+		}
+
+		idm = response[6..14];
+		pmm = response[14..22];
+
+		return true;
+	}
+	bool rfOff(){
+		ubyte[] response;
+
+		/* RFConfiguration (RF field) */
+		response = rwCommand([0xd4, 0x32, 0x01, 0x00]);
+		if(response.length ==0 || response.length != 2 || !cmp(response, [0xd5, 0x33], 2)){
+			return false;
+		}
+		return true;
+	}
+	private ubyte[] rwCommand(ubyte[] command){
 		ubyte[] buf;
 		ubyte dcs;
 		ubyte[] response;
@@ -144,7 +169,7 @@ class RCS620S{
 		}
 		return cast(ubyte)-(sum & 0xff);
 	}
-	private void writeArray(ubyte[] data){
+	void writeArray(ubyte[] data){
 		"[".write;
 		foreach(ubyte n; data){
 			writef("%2x,", n);
