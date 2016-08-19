@@ -4,7 +4,7 @@ import serial.device;
 import serial.rcs620s;
 void main()
 {
-	auto rcs620s = new RCS620S("/dev/ttyACM0");
+	auto rcs620s = new RCS620S("/dev/ttyUSB0");
 
 	Thread.sleep(dur!("seconds")(2));//Arduinoのリセット待ち
 	"start init".writeln;

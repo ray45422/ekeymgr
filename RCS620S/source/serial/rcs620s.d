@@ -14,7 +14,7 @@ class RCS620S{
 	private const uint RCS620S_MAX_RW_RESPONSE_LEN = 265;
 	private SerialPort port;
 	this(string path){
-		this(new SerialPort(path, dur!("msecs")(50), dur!("msecs")(50)));
+		this(new SerialPort(path, dur!("msecs")(90), dur!("msecs")(90)));
 	}
 	this(SerialPort port){
 		this.port=port;
@@ -141,8 +141,11 @@ class RCS620S{
 		}
 		if(readed == len){
 			return receive;
+		}else{
+			receive=receive[0..readed];
+			receive=receive~readSerial(len-readed);
+			return receive;
 		}
-		return [];
 	}
 	private void cancel(string message){
 		/*"cancel: ".write;
