@@ -40,7 +40,7 @@ class Servo{
 		MonoTime after = MonoTime.currTime();
 		Duration timeElapsed;
 		stop=false;
-		if(detachTime == timeElapsed){
+		if(stopTime == timeElapsed){
 			if(stop){
 				thread = new Thread(&servoWrite).start();
 			}
@@ -49,7 +49,7 @@ class Servo{
 				writePulse();
 				after = MonoTime.currTime;
 				timeElapsed = after - before;
-				if(timeElapsed > detachTime){
+				if(timeElapsed > stopTime){
 					"detach".writeln;
 					break;
 				}
@@ -60,7 +60,7 @@ class Servo{
 		return angle;
 	}
 	void setAutoStop(Duration time){
-		detachTime = time;
+		stopTime = time;
 	}
 	private void servoWrite(){
 		while(!stop){
