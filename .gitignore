@@ -4,4 +4,5 @@ ekeymgr
 docs.json
 __dummy.html
 *.o
+*.a
 *.obj

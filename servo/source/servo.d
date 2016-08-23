@@ -6,7 +6,7 @@ import dgpio;
 
 class Servo{
 	private GPIO gpio;
-	private uint cycle;
+	private uint cycle=20000;
 	private ubyte angle = 0;
 	private uint ontime;
 	private Thread thread;
@@ -20,10 +20,11 @@ class Servo{
 			gpio.setOutput();
 	}
 	void detach(){
+		stop=true;
+		Thread.sleep(dur!("usecs")(cycle));
 		if(!(gpio is null)){
 			gpio.deactivate();
 		}
-		stop = true;
 	}
 	void write(ubyte angle){
 		this.angle = angle;
