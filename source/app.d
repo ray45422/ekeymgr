@@ -4,9 +4,12 @@ import core.thread;
 import serial.device;
 import serial.rcs620s;
 import servo;
+import dgpio;
 SerialPort lcd;
 void main()
 {
+	GPIO sw=new GPIO(18);
+	sw.setInput();
 	Servo servo=new Servo();
 	servo.setAutoStop(dur!("seconds")(1));
 	servo.attach(17);
@@ -26,6 +29,8 @@ void main()
 		while(!rcs620s.polling()){
 			Thread.sleep(dur!("msecs")(500));
 			rcs620s.rfOff();
+		}
+		while(sw.isLow()){
 		}
 		clearDisplay();
 		lcd.write("polling success");
