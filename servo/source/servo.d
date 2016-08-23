@@ -36,24 +36,13 @@ class Servo{
 			time=cycle;
 		}
 		ontime = time;
-		if(stop){
-			thread = new Thread(&servoWrite).start();
-		}
-	}
-	ubyte read(){
-		return angle;
-	}
-	void setAutoDetach(Duration time){
-		detachTime = time;
-	}
-	private void servoWrite(){
-		stop=false;
 		MonoTime before = MonoTime.currTime;
 		MonoTime after = MonoTime.currTime();
 		Duration timeElapsed;
-		if(detachTime == timeElapsed){//detachTimeが0か判別
-			while(!stop){
-				writePulse();
+		stop=false;
+		if(detachTime == timeElapsed){
+			if(stop){
+				thread = new Thread(&servoWrite).start();
 			}
 		}else{
 			while(!stop){
@@ -65,6 +54,17 @@ class Servo{
 					break;
 				}
 			}
+		}
+	}
+	ubyte read(){
+		return angle;
+	}
+	void setAutoDetach(Duration time){
+		detachTime = time;
+	}
+	private void servoWrite(){
+		while(!stop){
+			writePulse();
 		}
 	}
 	private void writePulse(){

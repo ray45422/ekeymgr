@@ -10,6 +10,7 @@ void main()
 	Servo servo=new Servo();
 	servo.setAutoDetach(dur!("seconds")(1));
 	servo.attach(17);
+	servo.write(180);
 	lcd = new SerialPort("/dev/ttyUSB1");
 	lcd.speed(BaudRate.BR_9600);
 	auto rcs620s = new RCS620S("/dev/ttyUSB0");
@@ -18,11 +19,8 @@ void main()
 		Thread.sleep(dur!("msecs")(500));
 		lcd.write(".");
 	}
-	clearDisplay();
-	lcd.write("init success!");
 	{
 		clearDisplay();
-		setPos(0,1);
 		lcd.write("polling start");
 		"polling start".writeln;
 		while(!rcs620s.polling()){
@@ -38,6 +36,7 @@ void main()
 		servo.write(180);
 		Thread.sleep(dur!("msecs")(1200));
 	}
+	servo.detach();
 	lcd.close();
 	rcs620s.close();
 }
