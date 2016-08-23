@@ -10,7 +10,7 @@ class Servo{
 	private ubyte angle = 0;
 	private uint ontime;
 	private Thread thread;
-	private Duration detachTime;
+	private Duration stopTime;
 	private bool stop = true;
 	this(){
 	}
@@ -59,7 +59,7 @@ class Servo{
 	ubyte read(){
 		return angle;
 	}
-	void setAutoDetach(Duration time){
+	void setAutoStop(Duration time){
 		detachTime = time;
 	}
 	private void servoWrite(){

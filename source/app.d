@@ -8,7 +8,7 @@ SerialPort lcd;
 void main()
 {
 	Servo servo=new Servo();
-	servo.setAutoDetach(dur!("seconds")(1));
+	servo.setAutoStop(dur!("seconds")(1));
 	servo.attach(17);
 	servo.write(180);
 	lcd = new SerialPort("/dev/ttyUSB1");
@@ -32,10 +32,10 @@ void main()
 		setPos(0,1);
 		lcd.write(arrayHex(rcs620s.idm));
 		servo.write(0);
-		Thread.sleep(dur!("msecs")(1200));
+		Thread.sleep(dur!("msecs")(500));
 		servo.write(180);
-		Thread.sleep(dur!("msecs")(1200));
 	}
+	clearDisplay();
 	servo.detach();
 	lcd.close();
 	rcs620s.close();
