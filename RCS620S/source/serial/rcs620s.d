@@ -132,7 +132,7 @@ class RCS620S{
 		return response;
 	}
 	private ubyte[] readSerial(ulong len){
-		ubyte[] receive = new ubyte[len];
+		ubyte[] receive = new ubyte[cast(uint)len];
 		ulong readed;
 		try{
 			readed = port.read(receive);
@@ -142,7 +142,7 @@ class RCS620S{
 		if(readed == len){
 			return receive;
 		}else{
-			receive=receive[0..readed];
+			receive=receive[0..cast(uint)readed];
 			receive=receive~readSerial(len-readed);
 			return receive;
 		}
@@ -163,12 +163,12 @@ class RCS620S{
 	}
 	private bool cmp(ubyte[] data1, ubyte[] data2, ulong len){
 		len--;
-		return data1[0..len] == data2[0..len];
+		return data1[0..cast(uint)len] == data2[0..cast(uint)len];
 	}
 	private ubyte calcDCS(ubyte[] data){
 		ubyte sum = 0;
 		for(ulong i = 0; i < data.length; ++i){
-			sum += data[i];
+			sum += data[cast(uint)i];
 		}
 		return cast(ubyte)-(sum & 0xff);
 	}
