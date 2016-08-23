@@ -1,0 +1,13 @@
+{
+	"name": "servo",
+	"targetType": "library",
+	"authors": [
+		"ray45422"
+	],
+	"dependencies": {
+		"dgpio": "~>0.0.2"
+	},
+	"description": "servo control library",
+	"copyright": "Copyright © 2016, ray45422",
+	"license": "MIT"
+}

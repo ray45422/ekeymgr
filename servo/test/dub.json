@@ -1,0 +1,13 @@
+{
+	"name": "servo_test",
+	"Type": "executable",
+	"authors": [
+		"ray45422"
+	],
+	"dependencies": {
+		"servo": { "path":  "../"},
+	},
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2016, ray45422",
+	"license": "MIT"
+}
