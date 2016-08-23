@@ -3,14 +3,16 @@ import std.string;
 import core.thread;
 import serial.device;
 import serial.rcs620s;
+import servo;
 SerialPort lcd;
 void main()
 {
+	Servo servo=new Servo();
+	servo.setAutoDetach(dur!("seconds")(1));
+	servo.attach(17);
 	lcd = new SerialPort("/dev/ttyUSB1");
 	lcd.speed(BaudRate.BR_9600);
-	clearDisplay();
 	auto rcs620s = new RCS620S("/dev/ttyUSB0");
-	"start init".writeln;
 	lcd.write("init");
 	while(!rcs620s.init()){
 		Thread.sleep(dur!("msecs")(500));
@@ -18,23 +20,25 @@ void main()
 	}
 	clearDisplay();
 	lcd.write("init success!");
-	setPos(0,1);
-	lcd.write("polling start");
-	"init success".writeln;
-	"polling start".writeln;
-	while(!rcs620s.polling()){
-		Thread.sleep(dur!("msecs")(500));
-		rcs620s.rfOff();
+	{
+		clearDisplay();
+		setPos(0,1);
+		lcd.write("polling start");
+		"polling start".writeln;
+		while(!rcs620s.polling()){
+			Thread.sleep(dur!("msecs")(500));
+			rcs620s.rfOff();
+		}
+		clearDisplay();
+		lcd.write("polling success");
+		setPos(0,1);
+		lcd.write(arrayHex(rcs620s.idm));
+		servo.write(0);
+		Thread.sleep(dur!("msecs")(1200));
+		servo.write(180);
+		Thread.sleep(dur!("msecs")(1200));
 	}
-	clearDisplay();
-	lcd.write("polling success");
-	setPos(0,1);
-	lcd.write(arrayHex(rcs620s.idm));
-	"polling success".writeln;
-	"id:".write;
-	rcs620s.writeArray(rcs620s.idm);
-	"pmm:".write;
-	rcs620s.writeArray(rcs620s.pmm);
+	lcd.close();
 	rcs620s.close();
 }
 
