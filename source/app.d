@@ -29,7 +29,6 @@ int main(string[] args)
 	switch(args[1]){
 		case "daemon":
 			import ekeymgr.daemon;
-			"test".writeln;
 			Daemon daemon = new Daemon();
 			daemon.main();
 			break;
