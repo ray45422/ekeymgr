@@ -1,3 +1,4 @@
+module ekeymgr.daemon;
 import std.stdio;
 import std.string;
 import core.thread;
@@ -23,7 +24,12 @@ class Daemon{
 			lcd.write(".");
 		}
 	}
-	public void loop(){
+	public void main(){
+		for(;;){
+			loop();
+		}
+	}
+	private void loop(){
 		{
 			clearDisplay();
 			lcd.write("polling start");
