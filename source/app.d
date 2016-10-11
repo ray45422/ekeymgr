@@ -32,6 +32,10 @@ int main(string[] args)
 			Daemon daemon = new Daemon();
 			daemon.main();
 			break;
+		case "auth":
+			import ekeymgr.auth;
+			Auth auth = new Auth();
+			return auth.auth(args[2], args[3]);
 		default:
 			break;
 	}
