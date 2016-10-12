@@ -30,7 +30,7 @@ CREATE TABLE `authdata` (
 	`id` varchar(100),
 	`valid_flag` tinyint(1),
 	`valid_count` int(11),
-	`valid_time` timestamp);
+	`valid_time` timestamp NULL);
 
 CREATE TABLE `rooms_auth` (
 	`auth_id` int(11),
