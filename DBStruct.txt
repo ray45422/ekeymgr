@@ -1,0 +1,45 @@
+データベース構造についてメモ書き
+データベースにはmariaDB(MySQL)を使用する
+
+専用のデータベースを作成し、以下の6つのテーブルを作成する
+users
+rooms
+services
+authdata
+rooms_auth
+log
+
+データ構造及びSQL文
+CREATE TABLE `users` (
+	`user_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`user_name` varchar(100),
+	`disp_name` varchar(16));
+
+CREATE TABLE `rooms` (
+	`room_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`room_name` varchar(100));
+
+CREATE TABLE `services` (
+	`service_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`service_name` varchar(100));
+
+CREATE TABLE `authdata` (
+	`auth_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`user_id` int(11),
+	`service_id` int(11),
+	`id` varchar(100),
+	`valid_flag` tinyint(1),
+	`valid_count` int(11),
+	`valid_time` timestamp);
+
+CREATE TABLE `rooms_auth` (
+	`auth_id` int(11),
+	`room_id` int(11),
+	PRIMARY KEY (auth_id,room_id));
+
+CREATE TABLE `log` (
+	`log_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`time` timestamp,
+	`user_id` int(11),
+	`auth_id` int(11),
+	`room_id` int(11));
