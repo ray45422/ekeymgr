@@ -43,12 +43,11 @@ class Daemon{
 		int ret = auth.auth("FeliCa",arrayHex(rcs620s.idm));
 		AuthData ad = auth.getLastAuthData;
 		clearDisplay();
-		lcd.write("polling success");
-		setPos(0,1);
 		if(ret == 0){
 			string disp_name = ad.getDispname;
 			lcd.write(lockMan.isLock?"welcome":"good bye");
-			lcd.write(" " ~ disp_name);
+			setPos(0,1);
+			lcd.write("" ~ disp_name);
 			lockMan.toggle();
 		}else{
 			lcd.write("Auth failed");
