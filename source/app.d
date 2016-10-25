@@ -42,13 +42,13 @@ int main(string[] args)
 			lockMan.open();
 			break;
 		case "close":
-                        import ekeymgr.lockmanager;
-                        LockManager lockMan = new LockManager();
+			import ekeymgr.lockmanager;
+			LockManager lockMan = new LockManager();
 			lockMan.close();
 			break;
 		case "toggle":
-                        import ekeymgr.lockmanager;
-                        LockManager lockMan = new LockManager();
+			import ekeymgr.lockmanager;
+			LockManager lockMan = new LockManager();
 			lockMan.toggle();
 			break;
 		default:
