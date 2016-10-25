@@ -23,12 +23,14 @@ public:
 		servo.write(servo_open);
 		servo.write(servo_default);
 		servo.detach();
+		lock = false;
 	}
 	void close(){
 		servo.attach(servo_pin);
 		servo.write(servo_close);
 		servo.write(servo_default);
 		servo.detach();
+		lock = true;
 	}
 	void toggle(){
 		if(lock){
