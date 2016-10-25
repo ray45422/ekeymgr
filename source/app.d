@@ -36,6 +36,19 @@ int main(string[] args)
 			import ekeymgr.auth;
 			Auth auth = new Auth();
 			return auth.auth(args[2], args[3]);
+		{
+		import ekeymgr.lockmanager;
+		LockManager lockMan = new LockManager();
+		case "open":
+			lockMan.open();
+			break;
+		case "close":
+			lockMan.close();
+			break;
+		case "toggle":
+			lockMan.toggle();
+			break;
+		}
 		default:
 			break;
 	}
