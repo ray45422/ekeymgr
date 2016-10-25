@@ -6,6 +6,7 @@ import mysql.d;
 
 class Auth{
 	Mysql mysql;
+	AuthData lastAuthData;
 	this(){
 		writeln("connecting database...");
 		mysql = new Mysql("192.168.32.123",3306,"ekeymgr","ekeymgr","ekeymgr");
@@ -14,26 +15,30 @@ class Auth{
 	byte auth(string service_name, string service_id){
 		MysqlResult rows;
 		try{
-			rows = mysql.query("SELECT services.service_name, authdata.id FROM authdata, services WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\'");
+			rows = mysql.query("SELECT services.*, authdata.*, users.* FROM authdata, services, users WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.user_id = users.user_id");
 		}catch(MysqlDatabaseException e){
 			e.msg.writeln;
 			return 1;
 		}
 		foreach(MysqlRow auth; rows){
-			//writefln("%s %s %s %s %s %s",auth["username"],auth["service_name"],auth["service_id"],auth["valid_flag"],auth["valid_count"],auth["valid_time"]);
+			//writefln("%s %s %s %s %s %s",auth["user_name"],auth["service_name"],auth["service_id"],auth["valid_flag"],auth["valid_count"],auth["valid_time"]);
 			//new AuthData(auth).write;
 			//writefln("%s %s",auth["id"],auth["service_name"]);
 		}
 		if(rows.length != 1){
 			return 64;//合致するIDが見つからない
 		}
+		lastAuthData = new AuthData(rows.row);
 		return 0;//合致するIDが見つかった
+	}
+	AuthData getLastAuthData(){
+		return lastAuthData;
 	}
 }
 class AuthData{
 	private int user_id;
-	private string username;
-	private string dispname;
+	private string user_name;
+	private string disp_name;
 	private string service_name;
 	private string service_id;
 	private bool valid_flag;
@@ -41,8 +46,8 @@ class AuthData{
 	private string valid_time;
 	this(MysqlRow result){
 		user_id = result["user_id"].to!int;
-		username = result["username"];
-		dispname = result["dispname"];
+		user_name = result["user_name"];
+		disp_name = result["disp_name"];
 		service_name = result["service_name"];
 		service_id = result["service_id"];
 		if(result["valid_flag"] == ""){
@@ -67,12 +72,12 @@ class AuthData{
 		return valid_flag;
 	}
 	public string getName(){
-		return username;
+		return user_name;
 	}
 	public string getDispname(){
-		return dispname;
+		return disp_name;
 	}
 	public void write(){
-		writefln("user_id: %s, username:%s, dispname:%s, service_name:%s, service_id:%s, valid_flag:%s, valid_count:%s, valid_time:%s",user_id,username,dispname,service_name,service_id,valid_flag,valid_count,valid_time);
+		writefln("user_id: %s, username:%s, dispname:%s, service_name:%s, service_id:%s, valid_flag:%s, valid_count:%s, valid_time:%s",user_id,user_name,disp_name,service_name,service_id,valid_flag,valid_count,valid_time);
 	}
 }
