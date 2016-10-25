@@ -21,6 +21,7 @@ class Daemon{
 			Thread.sleep(dur!("msecs")(500));
 			lcd.write(".");
 		}
+		lockMan.init();
 	}
 	public void main(){
 		for(;;){
@@ -29,7 +30,9 @@ class Daemon{
 	}
 	private void loop(){
 		clearDisplay();
-		lcd.write("polling...");
+		lcd.write("welcome");
+		setPos(0,1);
+		lcd.write(lockMan.isLock?"close":"open");
 		"polling start".writeln;
 		while(!rcs620s.polling()){
 			Thread.sleep(dur!("msecs")(500));
@@ -41,12 +44,11 @@ class Daemon{
 		lcd.write("polling success");
 		setPos(0,1);
 		if(ret == 0){
-			lcd.write(arrayHex(rcs620s.idm));
+			lcd.write(lockMan.isLock?"welcome":"good bye");
 			lockMan.toggle();
 		}else{
 			lcd.write("Auth failed");
 		}
-		Thread.sleep(dur!("seconds")(5));
 	}
 	void stop(){
 		clearDisplay();
