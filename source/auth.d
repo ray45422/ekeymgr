@@ -14,16 +14,20 @@ class Auth{
 	byte auth(string service_name, string service_id){
 		MysqlResult rows;
 		try{
-			rows = mysql.query("SELECT authdata.*, users.username, users.dispname FROM authdata, users WHERE users.user_id = authdata.user_id");
+			rows = mysql.query("SELECT services.service_name, authdata.id FROM authdata, services WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\'");
 		}catch(MysqlDatabaseException e){
 			e.msg.writeln;
 			return 1;
 		}
 		foreach(MysqlRow auth; rows){
 			//writefln("%s %s %s %s %s %s",auth["username"],auth["service_name"],auth["service_id"],auth["valid_flag"],auth["valid_count"],auth["valid_time"]);
-			new AuthData(auth).write;
+			//new AuthData(auth).write;
+			//writefln("%s %s",auth["id"],auth["service_name"]);
 		}
-		return 0;
+		if(rows.length != 1){
+			return 64;//合致するIDが見つからない
+		}
+		return 0;//合致するIDが見つかった
 	}
 }
 class AuthData{
