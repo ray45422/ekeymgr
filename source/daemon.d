@@ -4,20 +4,18 @@ import std.string;
 import core.thread;
 import serial.device;
 import serial.rcs620s;
-import servo;
+import ekeymgr.lockmanager;
 
 class Daemon{
 	RCS620S rcs620s;
 	SerialPort lcd;
-	Servo servo;
+	LockManager lockMan;
 	this(){
-		servo=new Servo();
-		servo.setAutoStop(dur!("seconds")(1));
-		servo.attach(17);
-		servo.write(180);
+		lockMan = new LockManager();
 		lcd = new SerialPort("/dev/ttyUSB1");
 		lcd.speed(BaudRate.BR_9600);
 		rcs620s = new RCS620S("/dev/ttyUSB0");
+		clearDisplay();
 		lcd.write("init");
 		while(!rcs620s.init()){
 			Thread.sleep(dur!("msecs")(500));
@@ -30,24 +28,25 @@ class Daemon{
 		}
 	}
 	private void loop(){
-		{
-			clearDisplay();
-			lcd.write("polling start");
-			"polling start".writeln;
-			while(!rcs620s.polling()){
-				Thread.sleep(dur!("msecs")(500));
-				rcs620s.rfOff();
-			}
+		clearDisplay();
+		lcd.write("polling...");
+		"polling start".writeln;
+		while(!rcs620s.polling()){
+			Thread.sleep(dur!("msecs")(500));
+			rcs620s.rfOff();
+		}
+		import ekeymgr.auth;
+		int ret = new Auth().auth("FeliCa",arrayHex(rcs620s.idm));
+		if(ret == 0){
 			clearDisplay();
 			lcd.write("polling success");
 			setPos(0,1);
 			lcd.write(arrayHex(rcs620s.idm));
-			servo.write(0);
-			Thread.sleep(dur!("msecs")(500));
-			servo.write(180);
+			lockMan.toggle();
 		}
+	}
+	void stop(){
 		clearDisplay();
-		servo.detach();
 		lcd.close();
 		rcs620s.close();
 	}
