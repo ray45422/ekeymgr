@@ -37,13 +37,16 @@ class Daemon{
 		}
 		import ekeymgr.auth;
 		int ret = new Auth().auth("FeliCa",arrayHex(rcs620s.idm));
+		clearDisplay();
+		lcd.write("polling success");
+		setPos(0,1);
 		if(ret == 0){
-			clearDisplay();
-			lcd.write("polling success");
-			setPos(0,1);
 			lcd.write(arrayHex(rcs620s.idm));
 			lockMan.toggle();
+		}else{
+			lcd.write("Auth failed");
 		}
+		Thread.sleep(dur!("seconds")(5));
 	}
 	void stop(){
 		clearDisplay();
