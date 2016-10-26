@@ -43,7 +43,7 @@ int main(string[] args)
 		case "open":
 			import ekeymgr.lockmanager;
 			LockManager lockMan = new LockManager();
-			if(!(args.length >= 2 && auth(args))){
+			if(!(args.length > 2 && auth(args))){
 				break;
 			}
 			lockMan.open();
@@ -51,7 +51,7 @@ int main(string[] args)
 		case "close":
 			import ekeymgr.lockmanager;
 			LockManager lockMan = new LockManager();
-			if(!(args.length >= 2 && auth(args))){
+			if(!(args.length > 2 && auth(args))){
 				break;
 			}
 			lockMan.close();
@@ -59,7 +59,7 @@ int main(string[] args)
 		case "toggle":
 			import ekeymgr.lockmanager;
 			LockManager lockMan = new LockManager();
-			if(!(args.length >= 2 && auth(args))){
+			if(!(args.length > 2 && auth(args))){
 				break;
 			}
 			lockMan.toggle();
