@@ -28,9 +28,9 @@ int main(string[] args)
 	}
 	switch(args[1]){
 		case "daemon":
-			import ekeymgr.daemon;
-			Daemon daemon = new Daemon();
-			daemon.main();
+			import ekeymgr.userdaemon;
+			UserDaemon userdaemon = new UserDaemon();
+			userdaemon.main();
 			break;
 		case "auth":
 			if(args.length != 4){

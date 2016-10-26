@@ -1,4 +1,4 @@
-module ekeymgr.daemon;
+module ekeymgr.userdaemon;
 import std.stdio;
 import std.string;
 import core.thread;
@@ -6,7 +6,7 @@ import serial.device;
 import serial.rcs620s;
 import ekeymgr.lockmanager;
 
-class Daemon{
+class UserDaemon{
 	RCS620S rcs620s;
 	SerialPort lcd;
 	LockManager lockMan;
