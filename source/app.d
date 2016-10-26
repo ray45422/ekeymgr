@@ -43,20 +43,38 @@ int main(string[] args)
 		case "open":
 			import ekeymgr.lockmanager;
 			LockManager lockMan = new LockManager();
+			if(!(args.length >= 2 && auth(args))){
+				break;
+			}
 			lockMan.open();
 			break;
 		case "close":
 			import ekeymgr.lockmanager;
 			LockManager lockMan = new LockManager();
+			if(!(args.length >= 2 && auth(args))){
+				break;
+			}
 			lockMan.close();
 			break;
 		case "toggle":
 			import ekeymgr.lockmanager;
 			LockManager lockMan = new LockManager();
+			if(!(args.length >= 2 && auth(args))){
+				break;
+			}
 			lockMan.toggle();
 			break;
 		default:
 			break;
 	}
 	return 0;
+}
+bool auth(string[] args){
+	if(args.length !=4){
+		"Too few arguments.".writeln;
+		return false;
+	}
+	import ekeymgr.auth;
+	Auth auth = new Auth();
+	return auth.auth(args[2], args[3]) != 0;
 }
