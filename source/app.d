@@ -53,10 +53,12 @@ int main(string[] args)
 	}
 	{
 		import std.socket;
+		import core.time;
 		auto name = "/run/ekeymgr.sock";
 		auto address = new UnixAddress(name);
-
 		auto socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
+		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.RCVTIMEO, dur!("seconds")(10));
+		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.SNDTIMEO, dur!("seconds")(10));
 		socket.connect(address);
 		scope(exit) socket.close;
 		string str = args[1];
