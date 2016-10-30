@@ -59,7 +59,13 @@ int main(string[] args)
 		auto socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.RCVTIMEO, dur!("seconds")(10));
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.SNDTIMEO, dur!("seconds")(10));
-		socket.connect(address);
+		try{
+			socket.connect(address);
+		}catch(SocketOSException e){
+			e.msg.writeln;
+			"Run \'systemctl start ekeymgr.service\' or \'ekeymgr daemon\' as root.".writeln;
+			return 1;
+		}
 		scope(exit) socket.close;
 		string str = args[1];
 		for(int i = 2; i < args.length; ++i){
