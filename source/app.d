@@ -54,6 +54,7 @@ int main(string[] args)
 	{
 		import std.socket;
 		import core.time;
+		import std.array;
 		auto name = "/run/ekeymgr.sock";
 		auto address = new UnixAddress(name);
 		auto socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
@@ -74,9 +75,19 @@ int main(string[] args)
 		socket.send(str);
 		auto buf = new char[255];
 		socket.receive(buf);
-		if(format(buf) == "1"){
+		string[] receive = format(buf).split('\n');
+		if(receive.length == 0){
 			"error".writeln;
 			return 1;
+		}else{
+			string code = receive[0];
+			receive = receive[1..receive.length];
+			foreach(msg ; receive){
+				msg.writeln;
+			}
+			if(code != "0"){
+				return 1;
+			}
 		}
 	}
 	return 0;

@@ -53,7 +53,14 @@ public:
 			auto buf = new char[255];
 			p.receive(buf);
 			string[] args = format(buf).split;
-			p.send(exec(args)?"0":"1");
+			ExecResult result = exec(args);
+			string msg = "";
+			if(result.isSuccess){
+				msg = "0\n";
+			}else{
+				msg = "1\n";
+			}
+			p.send(msg ~ result.msg);
 		}
 	}
 private:
@@ -72,7 +79,7 @@ private:
 		import std.conv;
 	  	return buf.to!string.chomp;
 	}
-	bool exec(string[] args){
+	ExecResult exec(string[] args){
 		auto f = &stop;
 		f = null;
 		switch(args[0]){
@@ -94,19 +101,23 @@ private:
 				}
 				f = &userdaemon.toggle;
 				break;
+			case "status":
+				string msg = "status:" ~ (userdaemon.isLock?"Lock":"Open");
+				return new ExecResult(true, msg);
 			case "stop":
+				"stopping daemon...".writeln;
 				stop();
-				return true;
+				return new ExecResult(true, "stopping daemon...");
 			default:
 				break;
 		}
 		if(f is null){
-			return false;
+			return new ExecResult(false, "Unknown operation " ~ args[0]);
 		}else{
 			Thread t = new Thread(f);
 			t.join;
 			t.start();
-			return true;
+			return new ExecResult(true, "");
 		}
 	}
 	void stop(){
@@ -121,4 +132,15 @@ private:
 		Auth auth = new Auth();
 		return auth.auth(args[1], args[2]) == 0;
 	}
+}
+class ExecResult{
+public:
+	this(){
+	}
+	this(bool isSuccess, string msg){
+		this.isSuccess = isSuccess;
+		this.msg = msg;
+	}
+	bool isSuccess = false;
+	string msg = "";
 }

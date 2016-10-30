@@ -74,6 +74,9 @@ class UserDaemon{
 	void stop(){
 		running = false;
 	}
+	bool isLock(){
+		return lockMan.isLock();
+	}
 	private void lcdUpdate(){
 		clearDisplay();
 		lcd.write("welcome");
