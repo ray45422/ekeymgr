@@ -24,19 +24,25 @@ class UserDaemon{
 		lockMan.init();
 	}
 	public void main(){
-		for(;;){
+		while(running){
 			loop();
 		}
 	}
 	private void loop(){
-		clearDisplay();
-		lcd.write("welcome");
-		setPos(0,1);
-		lcd.write(lockMan.isLock?"close":"open");
+		lcdUpdate();
 		"polling start".writeln;
-		while(!rcs620s.polling()){
+		while(!rcs620s.polling() && running){
 			Thread.sleep(dur!("msecs")(500));
 			rcs620s.rfOff();
+		}
+		if(!running){
+			clearDisplay();
+			lcd.write("service not");
+			setPos(0,1);
+			lcd.write("available");
+			lcd.close();
+			rcs620s.close();
+			return;
 		}
 		import ekeymgr.auth;
 		Auth auth = new Auth();
@@ -53,10 +59,26 @@ class UserDaemon{
 			lcd.write("Auth failed");
 		}
 	}
+	void open(){
+		lockMan.open();
+		lcdUpdate();
+	}
+	void close(){
+		lockMan.close();
+		lcdUpdate();
+	}
+	void toggle(){
+		lockMan.toggle();
+		lcdUpdate;
+	}
 	void stop(){
+		running = false;
+	}
+	private void lcdUpdate(){
 		clearDisplay();
-		lcd.close();
-		rcs620s.close();
+		lcd.write("welcome");
+		setPos(10, 1);
+		lcd.write(lockMan.isLock?"close":"open");
 	}
 	private void clearDisplay(){
 		ubyte[2] buf=[0x1b,0x43];
@@ -77,5 +99,6 @@ class UserDaemon{
 		}
 		return str;
 	}
-
+private:
+	bool running = true;
 }
