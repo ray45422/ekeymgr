@@ -7,12 +7,12 @@ int main(string[] args)
 	string versionString = "0.0.0";
 	/*オプション処理*/
 	bool versionFlag = false;
-	bool systemDaemonFlag = false;
+	bool userDaemonFlag = false;
 	try{
 		getopt(args,
 			"v",&versionFlag,
 			"version",&versionFlag,
-			"system", &systemDaemonFlag);
+			"user", &userDaemonFlag);
 	}catch(GetOptException e){
 		e.msg.writeln;
 		return 1;
@@ -30,7 +30,7 @@ int main(string[] args)
 	}
 	switch(args[1]){
 		case "daemon":
-			if(systemDaemonFlag){
+			if(!userDaemonFlag){
 				import ekeymgr.systemdaemon;
 				SystemDaemon systemdaemon = new SystemDaemon();
 				systemdaemon.main();
