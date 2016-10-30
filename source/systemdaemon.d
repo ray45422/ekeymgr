@@ -80,6 +80,9 @@ private:
 	  	return buf.to!string.chomp;
 	}
 	ExecResult exec(string[] args){
+		if(args.length == 0){
+			return new ExecResult(false, "Too few arguments;");
+		}
 		auto f = &stop;
 		f = null;
 		switch(args[0]){
