@@ -9,7 +9,16 @@ class Auth{
 	AuthData lastAuthData;
 	this(){
 		writeln("connecting database...");
-		mysql = new Mysql("192.168.32.123",3306,"ekeymgr","ekeymgr","ekeymgr");
+		mysql = new Mysql();
+		mysql.setConnectTimeout(2);
+		try{
+			mysql.connect("127.0.0.1",3306,"ekeymgr","ekeymgr","ekeymgr");
+		}catch(MysqlDatabaseException e){
+			import std.stdio;
+			import core.stdc.stdlib;
+			e.msg.writeln;
+			exit(EXIT_FAILURE);
+		}
 		writeln("connected");
 	}
 	byte auth(string service_name, string service_id){
