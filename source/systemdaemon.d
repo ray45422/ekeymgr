@@ -12,6 +12,17 @@ public:
 	this(){
 		address = new UnixAddress(socket_name);
 		socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
+		if(exists(socket_name)){
+			try{
+				socket.connect(address);
+			}catch(SocketOSException e){
+				e.msg.writeln;
+				("remove " ~ socket_name ~ " and binding socket...").writeln;
+				if(e.errorCode == 111){
+					remove(socket_name);
+				}
+			}
+		}
 		try{
 			socket.bind(address);
 		}catch(SocketOSException e){
@@ -33,6 +44,7 @@ public:
 	void main(){
 		Thread t = new Thread(&userdaemon.main).start;
 		socket.listen(1);
+		("listening on " ~ socket_name).writeln;
 		scope(exit) socket.close();
 		scope(exit) remove(socket_name);
 		while(running){
