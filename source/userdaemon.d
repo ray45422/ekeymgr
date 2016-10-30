@@ -7,9 +7,7 @@ import serial.rcs620s;
 import ekeymgr.lockmanager;
 
 class UserDaemon{
-	RCS620S rcs620s;
-	SerialPort lcd;
-	LockManager lockMan;
+public:
 	this(){
 		lockMan = new LockManager();
 		lcd = new SerialPort("/dev/ttyUSB1");
@@ -23,11 +21,20 @@ class UserDaemon{
 		}
 		lockMan.init();
 	}
-	public void main(){
+	void main(){
 		for(;;){
 			loop();
 		}
 	}
+	void stop(){
+		clearDisplay();
+		lcd.close();
+		rcs620s.close();
+	}
+private:
+	RCS620S rcs620s;
+	SerialPort lcd;
+	LockManager lockMan;
 	private void loop(){
 		clearDisplay();
 		lcd.write("welcome");
@@ -53,20 +60,15 @@ class UserDaemon{
 			lcd.write("Auth failed");
 		}
 	}
-	void stop(){
-		clearDisplay();
-		lcd.close();
-		rcs620s.close();
-	}
-	private void clearDisplay(){
+	void clearDisplay(){
 		ubyte[2] buf=[0x1b,0x43];
 		lcd.write(buf);
 	}
-	private void setPos(ubyte x,ubyte y){
+	void setPos(ubyte x,ubyte y){
 		ubyte[4] buf=[0x1b,0x47,cast(ubyte)(0x40+x),cast(ubyte)(0x40+y)];
 		lcd.write(buf);
 	}
-	private string arrayHex(ubyte[] a){
+	string arrayHex(ubyte[] a){
 		string str="";
 		foreach(uint n;a){
 			string b=format("%x",n);
@@ -77,5 +79,4 @@ class UserDaemon{
 		}
 		return str;
 	}
-
 }

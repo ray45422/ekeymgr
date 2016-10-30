@@ -5,8 +5,7 @@ import std.conv;
 import mysql.d;
 
 class Auth{
-	Mysql mysql;
-	AuthData lastAuthData;
+public:
 	this(){
 		writeln("connecting database...");
 		mysql = new Mysql();
@@ -43,16 +42,12 @@ class Auth{
 	AuthData getLastAuthData(){
 		return lastAuthData;
 	}
+private:
+	Mysql mysql;
+	AuthData lastAuthData;
 }
 class AuthData{
-	private int user_id;
-	private string user_name;
-	private string disp_name;
-	private string service_name;
-	private string service_id;
-	private bool valid_flag;
-	private int valid_count;
-	private string valid_time;
+public:
 	this(MysqlRow result){
 		user_id = result["user_id"].to!int;
 		user_name = result["user_name"];
@@ -71,22 +66,31 @@ class AuthData{
 		}
 		valid_time = result["valid_time"];
 	}
-	public void update(){
+	void update(){
 		if(valid_count == -1 || valid_count >0){
 			valid_flag = true;
 		}
 
 	}
-	public bool isValid(){
+	bool isValid(){
 		return valid_flag;
 	}
-	public string getName(){
+	string getName(){
 		return user_name;
 	}
-	public string getDispname(){
+	string getDispname(){
 		return disp_name;
 	}
-	public void write(){
+	void write(){
 		writefln("user_id: %s, username:%s, dispname:%s, service_name:%s, service_id:%s, valid_flag:%s, valid_count:%s, valid_time:%s",user_id,user_name,disp_name,service_name,service_id,valid_flag,valid_count,valid_time);
 	}
+private:
+	int user_id;
+	string user_name;
+	string disp_name;
+	string service_name;
+	string service_id;
+	bool valid_flag;
+	int valid_count;
+	string valid_time;
 }

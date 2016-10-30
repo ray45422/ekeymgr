@@ -5,14 +5,13 @@ import core.time;
 import dgpio;
 
 class Servo{
-	private GPIO gpio;
-	private uint cycle=20000;
-	private ubyte angle = 0;
-	private uint ontime;
-	private Thread thread;
-	private Duration stopTime;
-	private bool stop = true;
+public:
 	this(){
+	}
+	~this(){
+		if(!(gpio is null)){
+			gpio.deactivate();
+		}
 	}
 	void attach(ubyte pin){
 			detach();
@@ -62,20 +61,23 @@ class Servo{
 	void setAutoStop(Duration time){
 		stopTime = time;
 	}
-	private void servoWrite(){
+private:
+	GPIO gpio;
+	uint cycle=20000;
+	ubyte angle = 0;
+	uint ontime;
+	Thread thread;
+	Duration stopTime;
+	bool stop = true;
+	void servoWrite(){
 		while(!stop){
 			writePulse();
 		}
 	}
-	private void writePulse(){
+	void writePulse(){
 		gpio.setHigh();
 		Thread.sleep(dur!("usecs")(ontime));
 		gpio.setLow();
 		Thread.sleep(dur!("usecs")(cycle-ontime));
-	}
-	~this(){
-		if(!(gpio is null)){
-			gpio.deactivate();
-		}
 	}
 }

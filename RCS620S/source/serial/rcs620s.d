@@ -6,13 +6,10 @@ import core.thread;
 import serial.device;
 
 class RCS620S{
+public:
 	ubyte[8] idm;
 	ubyte[8] pmm;
 	ulong timeout;
-	private const uint RCS620S_DEFAULT_TIMEOUT = 1000;
-	private const uint RCS620S_MAX_CARD_RESPONSE_LEN = 254;
-	private const uint RCS620S_MAX_RW_RESPONSE_LEN = 265;
-	private SerialPort port;
 	this(string path){
 		this(new SerialPort(path, dur!("msecs")(90), dur!("msecs")(90)));
 	}
@@ -68,7 +65,22 @@ class RCS620S{
 		}
 		return true;
 	}
-	private ubyte[] rwCommand(ubyte[] command){
+	void writeArray(ubyte[] data){
+		"[".write;
+		foreach(ubyte n; data){
+			writef("%2x,", n);
+		}
+		"]".writeln;
+	}
+	void close(){
+		port.close();
+	}
+private:
+	const uint RCS620S_DEFAULT_TIMEOUT = 1000;
+	const uint RCS620S_MAX_CARD_RESPONSE_LEN = 254;
+	const uint RCS620S_MAX_RW_RESPONSE_LEN = 265;
+	SerialPort port;
+	ubyte[] rwCommand(ubyte[] command){
 		ubyte[] buf;
 		ubyte dcs;
 		ubyte[] response;
@@ -131,7 +143,7 @@ class RCS620S{
 
 		return response;
 	}
-	private ubyte[] readSerial(ulong len){
+	ubyte[] readSerial(ulong len){
 		ubyte[] receive = new ubyte[cast(uint)len];
 		ulong readed;
 		try{
@@ -147,12 +159,12 @@ class RCS620S{
 			return receive;
 		}
 	}
-	private void cancel(string message){
+	void cancel(string message){
 		/*"cancel: ".write;
 		message.writeln;*/
 		cancel();
 	}
-	private void cancel(){
+	void cancel(){
 		/* transmit ACK */
 		ubyte[RCS620S_MAX_RW_RESPONSE_LEN] trash;
 		port.write([0x00, 0x00, 0xff, 0x00, 0xff, 0x00]);
@@ -161,25 +173,15 @@ class RCS620S{
 			port.read(trash);
 		}catch(TimeoutException e){}
 	}
-	private bool cmp(ubyte[] data1, ubyte[] data2, ulong len){
+	bool cmp(ubyte[] data1, ubyte[] data2, ulong len){
 		len--;
 		return data1[0..cast(uint)len] == data2[0..cast(uint)len];
 	}
-	private ubyte calcDCS(ubyte[] data){
+	ubyte calcDCS(ubyte[] data){
 		ubyte sum = 0;
 		for(ulong i = 0; i < data.length; ++i){
 			sum += data[cast(uint)i];
 		}
 		return cast(ubyte)-(sum & 0xff);
-	}
-	void writeArray(ubyte[] data){
-		"[".write;
-		foreach(ubyte n; data){
-			writef("%2x,", n);
-		}
-		"]".writeln;
-	}
-	void close(){
-		port.close();
 	}
 }
