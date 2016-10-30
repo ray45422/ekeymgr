@@ -104,6 +104,7 @@ private:
 			return false;
 		}else{
 			Thread t = new Thread(f);
+			t.join;
 			t.start();
 			return true;
 		}
