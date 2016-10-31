@@ -62,6 +62,7 @@ public:
 			}
 			p.send(msg ~ result.msg);
 		}
+		t.join;
 	}
 private:
 	string socket_name = "/run/ekeymgr.sock";
@@ -118,8 +119,7 @@ private:
 			return new ExecResult(false, "Unknown operation " ~ args[0]);
 		}else{
 			Thread t = new Thread(f);
-			t.join;
-			t.start();
+			t.start().join;
 			return new ExecResult(true, "");
 		}
 	}

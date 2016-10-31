@@ -42,6 +42,8 @@ class UserDaemon{
 			lcd.write("available");
 			lcd.close();
 			rcs620s.close();
+			sw.deactivate;
+			lockMan.stop;
 			return;
 		}
 		import ekeymgr.auth;
