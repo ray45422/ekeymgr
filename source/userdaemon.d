@@ -21,8 +21,8 @@ public:
 		}
 		lockMan.init();
 	}
-	void main(){
-		for(;;){
+	public void main(){
+		while(running){
 			loop();
 		}
 	}
@@ -36,14 +36,22 @@ private:
 	SerialPort lcd;
 	LockManager lockMan;
 	private void loop(){
-		clearDisplay();
-		lcd.write("welcome");
-		setPos(0,1);
-		lcd.write(lockMan.isLock?"close":"open");
+		lcdUpdate();
 		"polling start".writeln;
-		while(!rcs620s.polling()){
+		while(!rcs620s.polling() && running){
 			Thread.sleep(dur!("msecs")(500));
 			rcs620s.rfOff();
+		}
+		if(!running){
+			clearDisplay();
+			lcd.write("service not");
+			setPos(0,1);
+			lcd.write("available");
+			lcd.close();
+			rcs620s.close();
+			sw.deactivate;
+			lockMan.stop;
+			return;
 		}
 		import ekeymgr.auth;
 		Auth auth = new Auth();
@@ -60,7 +68,31 @@ private:
 			lcd.write("Auth failed");
 		}
 	}
-	void clearDisplay(){
+	void open(){
+		lockMan.open();
+		lcdUpdate();
+	}
+	void close(){
+		lockMan.close();
+		lcdUpdate();
+	}
+	void toggle(){
+		lockMan.toggle();
+		lcdUpdate;
+	}
+	void stop(){
+		running = false;
+	}
+	bool isLock(){
+		return lockMan.isLock();
+	}
+	private void lcdUpdate(){
+		clearDisplay();
+		lcd.write("welcome");
+		setPos(10, 1);
+		lcd.write(lockMan.isLock?"close":"open");
+	}
+	private void clearDisplay(){
 		ubyte[2] buf=[0x1b,0x43];
 		lcd.write(buf);
 	}
@@ -79,4 +111,6 @@ private:
 		}
 		return str;
 	}
+private:
+	bool running = true;
 }

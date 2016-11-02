@@ -18,6 +18,9 @@ public:
 		servo.attach(servo_pin);
 		servo.write(servo_default);
 	}
+	void stop(){
+		servo.detach();
+	}
 	void open(){
 		servo.attach(servo_pin);
 		servo.write(servo_open);
