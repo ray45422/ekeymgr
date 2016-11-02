@@ -26,10 +26,23 @@ public:
 			loop();
 		}
 	}
+	void open(){
+		lockMan.open();
+		lcdUpdate();
+	}
+	void close(){
+		lockMan.close();
+		lcdUpdate();
+	}
+	void toggle(){
+		lockMan.toggle();
+		lcdUpdate;
+	}
 	void stop(){
-		clearDisplay();
-		lcd.close();
-		rcs620s.close();
+		running = false;
+	}
+	bool isLock(){
+		return lockMan.isLock();
 	}
 private:
 	RCS620S rcs620s;
@@ -66,24 +79,6 @@ private:
 		}else{
 			lcd.write("Auth failed");
 		}
-	}
-	void open(){
-		lockMan.open();
-		lcdUpdate();
-	}
-	void close(){
-		lockMan.close();
-		lcdUpdate();
-	}
-	void toggle(){
-		lockMan.toggle();
-		lcdUpdate;
-	}
-	void stop(){
-		running = false;
-	}
-	bool isLock(){
-		return lockMan.isLock();
 	}
 	private void lcdUpdate(){
 		clearDisplay();
