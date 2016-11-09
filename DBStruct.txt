@@ -12,7 +12,7 @@ fail_logs
 
 データ構造及びSQL文
 CREATE TABLE `users` (
-	`user_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`user_id` varchar(100) NOT NULL PRIMARY KEY,
 	`user_name` varchar(100),
 	`disp_name` varchar(16));
 
@@ -31,7 +31,7 @@ CREATE TABLE `services` (
 
 CREATE TABLE `authdata` (
 	`auth_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`user_id` int(11),
+	`user_id` varchar(100),
 	`service_id` int(11),
 	`id` varchar(100),
 	`valid_flag` tinyint(1),
@@ -67,7 +67,7 @@ CREATE TABLE `fail_logs` (
 
 CREATE TABLE `groups_users` (
 	`group_id` int(11),
-	`user_id` int(11),
+	`user_id` varchar(100),
 	PRIMARY KEY (group_id,user_id),
 	FOREIGN KEY(`group_id`) REFERENCES `groups`(`group_id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY(`user_id`) REFERENCES `users`(`user_id`) ON UPDATE CASCADE ON DELETE CASCADE);
@@ -81,7 +81,7 @@ CREATE TABLE `rooms_groups` (
 
 CREATE TABLE `rooms_users` (
 	`room_id` int(11),
-	`user_id` int(11),
+	`user_id` varchar(100),
 	PRIMARY KEY (room_id,user_id),
 	FOREIGN KEY(`room_id`) REFERENCES `rooms`(`room_id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY(`user_id`) REFERENCES `users`(`user_id`) ON UPDATE CASCADE ON DELETE CASCADE);
