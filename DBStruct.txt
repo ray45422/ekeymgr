@@ -93,7 +93,7 @@ CREATE TABLE `auth_timestamp` (
 	FOREIGN KEY(`auth_id`) REFERENCES `authdata`(`auth_id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY(`timestamp_id`) REFERENCES `validated_timestamp`(`timestamp_id`) ON UPDATE CASCADE ON DELETE CASCADE);
 
-CREATE TABLE `auth_timestamp-scheduled` (
+CREATE TABLE `auth_timestamp_scheduled` (
 	`auth_id` int(11),
 	`timestamp_scheduled_id` int(11),
 	PRIMARY KEY (auth_id,timestamp_scheduled_id),
@@ -114,7 +114,7 @@ CREATE TABLE `groups_timestamp` (
 	FOREIGN KEY(`group_id`) REFERENCES `groups`(`group_id`) ON UPDATE CASCADE ON DELETE CASCADE,
 	FOREIGN KEY(`timestamp_id`) REFERENCES `validated_timestamp`(`timestamp_id`) ON UPDATE CASCADE ON DELETE CASCADE);
 
-CREATE TABLE `groups_timestamp-scheduled` (
+CREATE TABLE `groups_timestamp_scheduled` (
 	`group_id` int(11),
 	`timestamp_scheduled_id` int(11),
 	PRIMARY KEY (group_id,timestamp_scheduled_id),
