@@ -23,20 +23,36 @@ public:
 	byte auth(string service_name, string service_id){
 		MysqlResult rows;
 		try{
-			rows = mysql.query("SELECT services.*, authdata.*, users.* FROM authdata, services, users WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.user_id = users.user_id AND valid_flag = \'1\'");
+			//rows = mysql.query("SELECT services.*, authdata.*, users.* FROM authdata, services, users WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.user_id = users.user_id AND valid_flag = \'1\'");
+			rows = mysql.query("SELECT users.user_id,users.user_name,users.disp_name,
+				authdata.id,authdata.auth_id,
+				services.service_name,
+				rooms.room_id,
+				available_count.count,
+				validated_timestamp.timestamp,
+				validated_timestamp_scheduled.days,validated_timestamp_scheduled.start_hours,validated_timestamp_scheduled.end_hours
+				FROM rooms
+				LEFT JOIN rooms_users ON (rooms.room_id=rooms_users.room_id)
+				JOIN authdata ON (rooms_users.user_id=authdata.user_id)
+				LEFT JOIN (users,services)
+					ON (authdata.user_id=users.user_id AND authdata.service_id=services.service_id)
+				LEFT JOIN (available_count,auth_count)
+					ON (authdata.auth_id=auth_count.auth_id AND available_count.count_id=auth_count.count_id)
+				LEFT JOIN (validated_timestamp,auth_timestamp)
+					ON (authdata.auth_id=auth_timestamp.auth_id AND validated_timestamp.timestamp_id=auth_timestamp.timestamp_id)
+				LEFT JOIN (validated_timestamp_scheduled,auth_timestamp_scheduled)
+					ON (authdata.auth_id=auth_timestamp_scheduled.auth_id AND validated_timestamp_scheduled.timestamp_scheduled_id=auth_timestamp_scheduled.timestamp_scheduled_id) "~
+				"WHERE services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.valid_flag=1"
+			);
 		}catch(MysqlDatabaseException e){
 			e.msg.writeln;
 			return 1;
-		}
-		foreach(MysqlRow auth; rows){
-			//writefln("%s %s %s %s %s %s",auth["user_name"],auth["service_name"],auth["service_id"],auth["valid_flag"],auth["valid_count"],auth["valid_time"]);
-			//new AuthData(auth).write;
-			//writefln("%s %s",auth["id"],auth["service_name"]);
 		}
 		if(rows.length != 1){
 			return 64;//合致するIDが見つからない
 		}
 		lastAuthData = new AuthData(rows.row);
+		//lastAuthData.write();
 		return 0;//合致するIDが見つかった
 	}
 	AuthData getLastAuthData(){
@@ -49,31 +65,18 @@ private:
 class AuthData{
 public:
 	this(MysqlRow result){
-		user_id = result["user_id"].to!int;
+		user_id = result["user_id"];
 		user_name = result["user_name"];
 		disp_name = result["disp_name"];
+		room_id = result["room_id"];
+		id = result["id"];
 		service_name = result["service_name"];
-		service_id = result["service_id"];
-		if(result["valid_flag"] == ""){
-			valid_flag = false;
-		}else{
-			valid_flag = result["valid_flag"].to!int == 1;
-		}
-		if(result["valid_count"] == ""){
-			valid_count = -1;
-		}else{
-			valid_count = result["valid_count"].to!int;
-		}
-		valid_time = result["valid_time"];
+		count = result["count"];
 	}
 	void update(){
-		if(valid_count == -1 || valid_count >0){
-			valid_flag = true;
+		if(count == ""){
+			/*回数更新処理*/
 		}
-
-	}
-	bool isValid(){
-		return valid_flag;
 	}
 	string getName(){
 		return user_name;
@@ -82,15 +85,21 @@ public:
 		return disp_name;
 	}
 	void write(){
-		writefln("user_id: %s, username:%s, dispname:%s, service_name:%s, service_id:%s, valid_flag:%s, valid_count:%s, valid_time:%s",user_id,user_name,disp_name,service_name,service_id,valid_flag,valid_count,valid_time);
+		writefln("user_id: %s, user_name:%s, disp_name:%s, room_id:%s, id:%s, service_name:%s, count:%s",
+			user_id,
+			user_name,
+			disp_name,
+			room_id,
+			id,
+			service_name,
+			count);
 	}
 private:
-	int user_id;
+	string user_id;
 	string user_name;
 	string disp_name;
+	string room_id;
+	string id;
 	string service_name;
-	string service_id;
-	bool valid_flag;
-	int valid_count;
-	string valid_time;
+	string count;
 }
