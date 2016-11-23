@@ -58,13 +58,17 @@ CREATE TABLE `logs` (
 	`auth_id` int(11),
 	`is_lock` tinyint(1),
 	`room_id` int(11),
-	FOREIGN KEY(`auth_id`) REFERENCES `authdata`(`auth_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+	FOREIGN KEY(`auth_id`) REFERENCES `authdata`(`auth_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`room_id`) REFERENCES `rooms`(`room_id`) ON UPDATE CASCADE ON DELETE CASCADE);
 
 CREATE TABLE `fail_logs` (
 	`log_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`time` timestamp,
 	`service_id` int(11),
-	`id` varchar(100));
+	`id` varchar(100),
+	`room_id` int(11),
+	FOREIGN KEY(`service_id`) REFERENCES `services`(`service_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`room_id`) REFERENCES `rooms`(`room_id`) ON UPDATE CASCADE ON DELETE CASCADE);
 
 CREATE TABLE `groups_users` (
 	`group_id` int(11),
