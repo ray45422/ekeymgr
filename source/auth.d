@@ -46,21 +46,28 @@ public:
 			);
 		}catch(MysqlDatabaseException e){
 			e.msg.writeln;
+			_isSuccess = false;
 			return 1;
 		}
 		if(rows.length != 1){
+			_isSuccess = false;
 			return 64;//合致するIDが見つからない
 		}
 		lastAuthData = new AuthData(rows.row);
 		//lastAuthData.write();
+		_isSuccess = true;
 		return 0;//合致するIDが見つかった
 	}
 	AuthData getLastAuthData(){
 		return lastAuthData;
 	}
+	bool isSuccess(){
+		return _isSuccess;
+	}
 private:
 	Mysql mysql;
 	AuthData lastAuthData;
+	bool _isSuccess;
 }
 class AuthData{
 public:
