@@ -68,14 +68,15 @@ private:
 		import ekeymgr.auth;
 		Auth auth = new Auth();
 		int ret = auth.auth("FeliCa",arrayHex(rcs620s.idm));
-		AuthData ad = auth.getLastAuthData;
 		clearDisplay();
 		if(ret == 0){
+			AuthData ad = auth.getLastAuthData;
 			string disp_name = ad.getDispname;
 			lcd.write(lockMan.isLock?"welcome":"good bye");
 			setPos(0,1);
 			lcd.write("" ~ disp_name);
 			lockMan.toggle();
+			auth.addLog(lockMan.isLock);
 		}else{
 			lcd.write("Auth failed");
 		}

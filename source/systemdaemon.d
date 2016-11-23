@@ -1,5 +1,6 @@
 module ekeymgr.systemdaemon;
 import ekeymgr.userdaemon;
+import ekeymgr.auth;
 import std.stdio;
 import std.socket;
 import std.file;
@@ -70,6 +71,7 @@ private:
 	Socket socket;
 	bool running = true;
 	UserDaemon userdaemon;
+	Auth _auth;
 	string format(char[] buf){
 		for(int i = 0; i < buf.length; ++i){
 			if(buf[i] == 255){
@@ -120,6 +122,7 @@ private:
 		}else{
 			Thread t = new Thread(f);
 			t.start().join;
+			_auth.addLog(userdaemon.isLock);
 			return new ExecResult(true, "");
 		}
 	}
@@ -128,12 +131,14 @@ private:
 		userdaemon.stop;
 	}
 	bool auth(string[] args){
+		_auth = new Auth();
+		bool result;
 		if(args.length != 3){
-			return false;
+			result = _auth.auth("ekeymgr","ekeymgr") == 0;
+		}else{
+			result = _auth.auth(args[1], args[2]) == 0;
 		}
-		import ekeymgr.auth;
-		Auth auth = new Auth();
-		return auth.auth(args[1], args[2]) == 0;
+		return result;
 	}
 }
 class ExecResult{

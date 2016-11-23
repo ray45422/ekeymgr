@@ -51,6 +51,7 @@ public:
 		}
 		if(rows.length != 1){
 			_isSuccess = false;
+			addFailLog(service_name, id);
 			return 64;//合致するIDが見つからない
 		}
 		lastAuthData = new AuthData(rows.row);
@@ -61,6 +62,21 @@ public:
 	AuthData getLastAuthData(){
 		return lastAuthData;
 	}
+	bool addLog(bool isLock){
+		if(lastAuthData is null){
+			return false;
+		}
+		string auth_id = lastAuthData.auth_id;
+		string room_id = lastAuthData.room_id;
+		string is_lock = isLock?"1":"0";
+		try{
+			mysql.query("INSERT INTO `logs` (`log_id`, `time`, `auth_id`, `room_id`, `is_lock`) VALUES (NULL, CURRENT_TIMESTAMP, '" ~ auth_id ~ "', '" ~ room_id ~ "','" ~ is_lock ~ "')");
+		}catch(MysqlDatabaseException e){
+			e.msg.writeln;
+			return false;
+		}
+		return true;
+	}
 	bool isSuccess(){
 		return _isSuccess;
 	}
@@ -68,6 +84,17 @@ private:
 	Mysql mysql;
 	AuthData lastAuthData;
 	bool _isSuccess;
+	bool addFailLog(string service_name,string id){
+		try{
+			auto rows = mysql.query("SELECT services.service_id FROM services WHERE services.service_name='" ~ service_name ~ "'");
+			string service_id = rows.row["service_id"];
+			mysql.query("INSERT INTO `fail_logs` (`log_id`,`time`,`service_id`,`id`) VALUES(NULL,CURRENT_TIMESTAMP,'" ~ service_id ~ "','" ~ id ~ "')");
+		}catch(MysqlDatabaseException e){
+			e.msg.writeln;
+			return false;
+		}
+		return true;
+	}
 }
 class AuthData{
 public:
