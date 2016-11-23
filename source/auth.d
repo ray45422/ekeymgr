@@ -20,7 +20,7 @@ public:
 		}
 		writeln("connected");
 	}
-	byte auth(string service_name, string service_id){
+	byte auth(string service_name, string id){
 		MysqlResult rows;
 		try{
 			//rows = mysql.query("SELECT services.*, authdata.*, users.* FROM authdata, services, users WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.user_id = users.user_id AND valid_flag = \'1\'");
@@ -42,7 +42,7 @@ public:
 					ON (authdata.auth_id=auth_timestamp.auth_id AND validated_timestamp.timestamp_id=auth_timestamp.timestamp_id)
 				LEFT JOIN (validated_timestamp_scheduled,auth_timestamp_scheduled)
 					ON (authdata.auth_id=auth_timestamp_scheduled.auth_id AND validated_timestamp_scheduled.timestamp_scheduled_id=auth_timestamp_scheduled.timestamp_scheduled_id) "~
-				"WHERE services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.valid_flag=1"
+				"WHERE services.service_name='" ~ service_name ~ "' AND authdata.id='" ~ id ~ "' AND authdata.valid_flag=1"
 			);
 		}catch(MysqlDatabaseException e){
 			e.msg.writeln;
