@@ -26,7 +26,7 @@ public:
 			//rows = mysql.query("SELECT services.*, authdata.*, users.* FROM authdata, services, users WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.user_id = users.user_id AND valid_flag = \'1\'");
 			rows = mysql.query("SELECT users.user_id,users.user_name,users.disp_name,
 				authdata.id,authdata.auth_id,
-				services.service_name,
+				services.service_name,service_id,
 				rooms.room_id,
 				available_count.count,
 				validated_timestamp.timestamp,
@@ -75,9 +75,11 @@ public:
 		user_id = result["user_id"];
 		user_name = result["user_name"];
 		disp_name = result["disp_name"];
+		auth_id = result["auth_id"];
 		room_id = result["room_id"];
 		id = result["id"];
 		service_name = result["service_name"];
+		service_id = result["service_id"];
 		count = result["count"];
 	}
 	void update(){
@@ -92,21 +94,25 @@ public:
 		return disp_name;
 	}
 	void write(){
-		writefln("user_id: %s, user_name:%s, disp_name:%s, room_id:%s, id:%s, service_name:%s, count:%s",
+		writefln("user_id: %s, user_name:%s, disp_name:%s, auth_id:%s, room_id:%s, id:%s, service_name:%s, service_id:%s, count:%s",
 			user_id,
 			user_name,
 			disp_name,
+			auth_id,
 			room_id,
 			id,
 			service_name,
+			service_id,
 			count);
 	}
 private:
 	string user_id;
 	string user_name;
 	string disp_name;
+	string auth_id;
 	string room_id;
 	string id;
 	string service_name;
+	string service_id;
 	string count;
 }
