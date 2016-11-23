@@ -90,19 +90,19 @@ private:
 		f = null;
 		switch(args[0]){
 			case "open":
-				if(args.length > 1 && !auth(args)){
+				if(args.length < 4 && !auth(args)){
 					break;
 				}
 				f = &userdaemon.open;
 				break;
 			case "close":
-				if(args.length > 1 && !auth(args)){
+				if(args.length < 4 && !auth(args)){
 					break;
 				}
 				f = &userdaemon.close;
 				break;
 			case "toggle":
-				if(args.length > 1 && !auth(args)){
+				if(args.length < 4 && !auth(args)){
 					break;
 				}
 				f = &userdaemon.toggle;
