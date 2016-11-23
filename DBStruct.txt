@@ -56,6 +56,7 @@ CREATE TABLE `logs` (
 	`log_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`time` timestamp,
 	`auth_id` int(11),
+	`is_lock` tinyint(1),
 	`room_id` int(11),
 	FOREIGN KEY(`auth_id`) REFERENCES `authdata`(`auth_id`) ON UPDATE CASCADE ON DELETE CASCADE);
 
