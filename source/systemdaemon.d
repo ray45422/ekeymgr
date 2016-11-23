@@ -91,19 +91,19 @@ private:
 		switch(args[0]){
 			case "open":
 				if(args.length < 4 && !auth(args)){
-					break;
+					return new ExecResult(false,"Authentication failure");
 				}
 				f = &userdaemon.open;
 				break;
 			case "close":
 				if(args.length < 4 && !auth(args)){
-					break;
+					return new ExecResult(false,"Authentication failure");
 				}
 				f = &userdaemon.close;
 				break;
 			case "toggle":
 				if(args.length < 4 && !auth(args)){
-					break;
+					return new ExecResult(false,"Authentication failure");
 				}
 				f = &userdaemon.toggle;
 				break;

@@ -87,6 +87,9 @@ private:
 	bool addFailLog(string service_name,string id){
 		try{
 			auto rows = mysql.query("SELECT services.service_id FROM services WHERE services.service_name='" ~ service_name ~ "'");
+			if(rows.length == 0){
+				return false;
+			}
 			string service_id = rows.row["service_id"];
 			mysql.query("INSERT INTO `fail_logs` (`log_id`,`time`,`service_id`,`id`) VALUES(NULL,CURRENT_TIMESTAMP,'" ~ service_id ~ "','" ~ id ~ "')");
 		}catch(MysqlDatabaseException e){
