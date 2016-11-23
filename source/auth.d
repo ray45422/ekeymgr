@@ -26,7 +26,7 @@ public:
 			//rows = mysql.query("SELECT services.*, authdata.*, users.* FROM authdata, services, users WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.user_id = users.user_id AND valid_flag = \'1\'");
 			rows = mysql.query("SELECT users.user_id,users.user_name,users.disp_name,
 				authdata.id,authdata.auth_id,
-				services.service_name,service_id,
+				services.service_name,services.service_id,
 				rooms.room_id,
 				available_count.count,
 				validated_timestamp.timestamp,
