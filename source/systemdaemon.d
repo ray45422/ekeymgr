@@ -122,7 +122,9 @@ private:
 		}else{
 			Thread t = new Thread(f);
 			t.start().join;
-			_auth.addLog(userdaemon.isLock);
+			if(!(_auth is null)){
+				_auth.addLog(userdaemon.isLock);
+			}
 			return new ExecResult(true, "");
 		}
 	}
