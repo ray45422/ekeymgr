@@ -1,3 +1,4 @@
+static import config = ekeymgr.config;
 import std.stdio;
 import std.string;
 import std.getopt;
@@ -27,6 +28,10 @@ int main(string[] args)
 	/*各種処理開始*/
 	if(args.length == 1){
 		return 0;
+	}
+	if(!config.init()){
+		"Setup failed".writeln;
+		return 1;
 	}
 	switch(args[1]){
 		case "daemon":

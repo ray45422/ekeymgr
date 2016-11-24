@@ -49,7 +49,6 @@ public:
 				after = MonoTime.currTime;
 				timeElapsed = after - before;
 				if(timeElapsed > stopTime){
-					"detach".writeln;
 					break;
 				}
 			}
