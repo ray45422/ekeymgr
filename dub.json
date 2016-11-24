@@ -8,6 +8,7 @@
 		"rcs620s": { "path":  "RCS620S"},
 		"servo": {"path": "servo"},
 		"mysql-d": "~>0.3.3",
+		"variantconfig": "~>1.1.5",
 	},
 	"description": "test",
 	"copyright": "Copyright © 2016, ray45422",

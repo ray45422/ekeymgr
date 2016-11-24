@@ -1,18 +1,23 @@
 module ekeymgr.userdaemon;
 import std.stdio;
 import std.string;
+import std.variant;
 import core.thread;
 import serial.device;
 import serial.rcs620s;
 import ekeymgr.lockmanager;
+static import config = ekeymgr.config;
 
 class UserDaemon{
 public:
 	this(){
+		openMsg = config.load("openMsg", Variant("Welcome!!")).toString;
+		closeMsg = config.load("closeMsg", Variant("See you...")).toString;
+		failMsg = config.load("failMsg", Variant("Auth Failed")).toString;
 		lockMan = new LockManager();
-		lcd = new SerialPort("/dev/ttyUSB1");
+		lcd = new SerialPort(config.load("lcdPath", Variant("/dev/ttyUSB1")).toString);
 		lcd.speed(BaudRate.BR_9600);
-		rcs620s = new RCS620S("/dev/ttyUSB0");
+		rcs620s = new RCS620S(config.load("rcs620sPath", Variant("/dev/ttyUSB2")).toString);
 		clearDisplay();
 		lcd.write("init");
 		while(!rcs620s.init()){
@@ -48,6 +53,9 @@ private:
 	RCS620S rcs620s;
 	SerialPort lcd;
 	LockManager lockMan;
+	string openMsg;
+	string closeMsg;
+	string failMsg;
 	private void loop(){
 		lcdUpdate();
 		"polling start".writeln;
@@ -72,18 +80,18 @@ private:
 		if(ret == 0){
 			AuthData ad = auth.getLastAuthData;
 			string disp_name = ad.getDispname;
-			lcd.write(lockMan.isLock?"welcome":"good bye");
+			lcd.write(lockMan.isLock?openMsg:closeMsg);
 			setPos(0,1);
 			lcd.write("" ~ disp_name);
 			lockMan.toggle();
 			auth.addLog(lockMan.isLock);
 		}else{
-			lcd.write("Auth failed");
+			lcd.write(failMsg);
 		}
 	}
 	private void lcdUpdate(){
 		clearDisplay();
-		lcd.write("welcome");
+		lcd.write(config.room_name);
 		setPos(10, 1);
 		lcd.write(lockMan.isLock?"close":"open");
 	}

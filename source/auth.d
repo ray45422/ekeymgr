@@ -1,4 +1,5 @@
 module ekeymgr.auth;
+static import config = ekeymgr.config;
 import std.stdio;
 import std.datetime;
 import std.conv;
@@ -11,7 +12,7 @@ public:
 		mysql = new Mysql();
 		mysql.setConnectTimeout(2);
 		try{
-			mysql.connect("127.0.0.1",3306,"ekeymgr","ekeymgr","ekeymgr");
+			mysql.connect(config.mySQLServerAddress, config.mySQLServerPort, config.mySQLServerUserName, config.mySQLServerPassword, config.mySQLServerDatabase);
 		}catch(MysqlDatabaseException e){
 			import std.stdio;
 			import core.stdc.stdlib;
@@ -42,7 +43,7 @@ public:
 					ON (authdata.auth_id=auth_timestamp.auth_id AND validated_timestamp.timestamp_id=auth_timestamp.timestamp_id)
 				LEFT JOIN (validated_timestamp_scheduled,auth_timestamp_scheduled)
 					ON (authdata.auth_id=auth_timestamp_scheduled.auth_id AND validated_timestamp_scheduled.timestamp_scheduled_id=auth_timestamp_scheduled.timestamp_scheduled_id) "~
-				"WHERE services.service_name='" ~ service_name ~ "' AND authdata.id='" ~ id ~ "' AND authdata.valid_flag=1"
+				"WHERE services.service_name='" ~ service_name ~ "' AND authdata.id='" ~ id ~ "' AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'"
 			);
 		}catch(MysqlDatabaseException e){
 			e.msg.writeln;
