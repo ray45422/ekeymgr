@@ -5,27 +5,27 @@ import std.file:exists;
 import mysql.d;
 import variantconfig;
 
+private VariantConfig configs;
 immutable string configFile = "/etc/ekeymgr/ekeymgr.conf";
 string mySQLServerAddress;
 uint mySQLServerPort;
 string mySQLServerUserName;
 string mySQLServerPassword;
 string mySQLServerDatabase;
-uint room_id = 1;
+uint room_id;
 string room_name = "";
 
 bool init(){
 	if(!exists(configFile)){
 		"Config file does not exist".writeln;
 	}
-	VariantConfig configs;
 	configs.loadFile(configFile);
-	mySQLServerAddress = configs.get("mySQLServerAddress", "127.0.0.1").toString;
-	mySQLServerPort = configs.get("mySQLServerPort", 3306).coerce!int;
-	mySQLServerUserName = configs.get("mySQLServerUserName", "ekeymgr").toString;
-	mySQLServerPassword = configs.get("mySQLServerPassword", "ekeymgr").toString;
-	mySQLServerDatabase = configs.get("mySQLServerDatabase", "ekeymgr").toString;
-	room_id = configs.get("room_id", 1).coerce!int;
+	mySQLServerAddress = load("mySQLServerAddress", "127.0.0.1");
+	mySQLServerPort = load("mySQLServerPort", 3306);
+	mySQLServerUserName = load("mySQLServerUserName", "ekeymgr");
+	mySQLServerPassword = load("mySQLServerPassword", "ekeymgr");
+	mySQLServerDatabase = load("mySQLServerDatabase", "ekeymgr");
+	room_id = load("room_id", 1);
 	if(!getRoomName()){
 		return false;
 	}
@@ -33,7 +33,6 @@ bool init(){
 }
 
 T load(T = string)(string key, const T defaultValue = T.init){
-	VariantConfig configs;
 	configs.loadFile(configFile);
 	return configs.get(key, defaultValue).coerce!T;
 }
