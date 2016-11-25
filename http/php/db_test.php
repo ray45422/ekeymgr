@@ -1,12 +1,19 @@
 <?php
 include('db_login.php');
 
-$connection = mysqli_connect($db_host, $db_username, $db_password);
-if(!$connection){
-	die("Could not connect to the database:<br />". mysqli_connect_error());
+$mysqli = new mysqli($db_host, $db_username, $db_password, $db_database);
+if($mysqli->connect_error){
+	die("Could not connect to the database:<br />". $mysqli->connect_error);
+}else{
+	$mysqli->set_charset("utf8");
 }
-$db_select = mysqli_select_db($connection, $db_database);
-if(!$db_select){
-	die("Could not select the database:<br />". mysqli_error($connection));
+$query = "SELECT * FROM logs";
+if($result = $mysqli->query($query)){
+	while($row = $result->fetch_assoc()){
+		echo "id:".$row["log_id"]." time:".$row["time"]." authId:".$row["auth_id"]."</br>";
+	}
 }
+include('table.php');
+$titles = ["#","日時","利用者","状態"];
+$table = new Table($titles);
 ?>
