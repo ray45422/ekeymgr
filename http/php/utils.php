@@ -30,4 +30,14 @@ class Table{
 		echo '</tr>';
 	}
 }
+function makelink($title, $address, ...$params){
+	$parameter = '';
+	if(count($params) !== 0){
+		$parameter = '?'.$params[0];
+		for ($i=1; $i < count($params); $i++) {
+			$parameter = $parameter.$params[$i];
+		}
+	}
+	return '<a href="'.$address.$parameter.'">'.$title.'</a>';
+}
 ?>
