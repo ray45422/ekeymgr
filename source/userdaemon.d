@@ -11,6 +11,7 @@ static import config = ekeymgr.config;
 class UserDaemon{
 public:
 	this(){
+		roomName = config.room_name;
 		openMsg = config.load("openMsg", "Welcome!!");
 		closeMsg = config.load("closeMsg", "See you...");
 		failMsg = config.load("failMsg", "Auth Failed");
@@ -27,6 +28,7 @@ public:
 		lockMan.init();
 	}
 	public void main(){
+		config.init();
 		while(running){
 			loop();
 		}
@@ -53,6 +55,7 @@ private:
 	RCS620S rcs620s;
 	SerialPort lcd;
 	LockManager lockMan;
+	string roomName;
 	string openMsg;
 	string closeMsg;
 	string failMsg;
@@ -91,7 +94,7 @@ private:
 	}
 	private void lcdUpdate(){
 		clearDisplay();
-		lcd.write(config.room_name);
+		lcd.write(roomName);
 		setPos(10, 1);
 		lcd.write(lockMan.isLock?"close":"open");
 	}
