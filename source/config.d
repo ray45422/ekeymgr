@@ -18,22 +18,24 @@ bool init(){
 	if(!exists(configFile)){
 		"Config file does not exist".writeln;
 	}
-	VariantConfig configs = VariantConfig(configFile);
-	mySQLServerAddress = configs.getValue("mySQLServerAddress", Variant("127.0.0.1")).toString;
-	mySQLServerPort = configs.getValue("mySQLServerPort", Variant(3306)).toInt;
-	mySQLServerUserName = configs.getValue("mySQLServerUserName", Variant("ekeymgr")).toString;
-	mySQLServerPassword = configs.getValue("mySQLServerPassword", Variant("ekeymgr")).toString;
-	mySQLServerDatabase = configs.getValue("mySQLServerDatabase", Variant("ekeymgr")).toString;
-	room_id = configs.getValue("room_id", Variant(1)).toInt;
+	VariantConfig configs;
+	configs.loadFile(configFile);
+	mySQLServerAddress = configs.get("mySQLServerAddress", "127.0.0.1").toString;
+	mySQLServerPort = configs.get("mySQLServerPort", 3306).coerce!int;
+	mySQLServerUserName = configs.get("mySQLServerUserName", "ekeymgr").toString;
+	mySQLServerPassword = configs.get("mySQLServerPassword", "ekeymgr").toString;
+	mySQLServerDatabase = configs.get("mySQLServerDatabase", "ekeymgr").toString;
+	room_id = configs.get("room_id", 1).coerce!int;
 	if(!getRoomName()){
 		return false;
 	}
 	return true;
 }
 
-Variant load(string key, Variant defaultValue = Variant(0)){
-	VariantConfig configs = VariantConfig(configFile);
-	return configs.getValue(key, defaultValue);
+T load(T = string)(string key, const T defaultValue = T.init){
+	VariantConfig configs;
+	configs.loadFile(configFile);
+	return configs.get(key, defaultValue).coerce!T;
 }
 
 string room_id_str(){

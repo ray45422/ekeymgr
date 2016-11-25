@@ -11,13 +11,13 @@ static import config = ekeymgr.config;
 class UserDaemon{
 public:
 	this(){
-		openMsg = config.load("openMsg", Variant("Welcome!!")).toString;
-		closeMsg = config.load("closeMsg", Variant("See you...")).toString;
-		failMsg = config.load("failMsg", Variant("Auth Failed")).toString;
+		openMsg = config.load("openMsg", "Welcome!!");
+		closeMsg = config.load("closeMsg", "See you...");
+		failMsg = config.load("failMsg", "Auth Failed");
 		lockMan = new LockManager();
-		lcd = new SerialPort(config.load("lcdPath", Variant("/dev/ttyUSB1")).toString);
+		lcd = new SerialPort(config.load("lcdPath", "/dev/ttyUSB1"));
 		lcd.speed(BaudRate.BR_9600);
-		rcs620s = new RCS620S(config.load("rcs620sPath", Variant("/dev/ttyUSB2")).toString);
+		rcs620s = new RCS620S(config.load("rcs620sPath", "/dev/ttyUSB2"));
 		clearDisplay();
 		lcd.write("init");
 		while(!rcs620s.init()){
