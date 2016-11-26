@@ -28,7 +28,6 @@ public:
 		lockMan.init();
 	}
 	public void main(){
-		config.init();
 		while(running){
 			loop();
 		}

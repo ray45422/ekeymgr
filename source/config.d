@@ -7,13 +7,13 @@ import variantconfig;
 
 private VariantConfig configs;
 immutable string configFile = "/etc/ekeymgr/ekeymgr.conf";
-string mySQLServerAddress;
-uint mySQLServerPort;
-string mySQLServerUserName;
-string mySQLServerPassword;
-string mySQLServerDatabase;
-uint room_id;
-string room_name = "";
+shared string mySQLServerAddress;
+shared uint mySQLServerPort;
+shared string mySQLServerUserName;
+shared string mySQLServerPassword;
+shared string mySQLServerDatabase;
+shared uint room_id;
+shared string room_name = "";
 
 bool init(){
 	if(!exists(configFile)){
