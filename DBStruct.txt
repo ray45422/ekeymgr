@@ -1,0 +1,134 @@
+データベース構造についてメモ書き
+データベースにはmariaDB(MySQL)を使用する
+
+専用のデータベースを作成し、以下の6つのテーブルを作成する
+users
+rooms
+services
+authdata
+rooms_auth
+logs
+fail_logs
+
+データ構造及びSQL文
+CREATE TABLE `users` (
+	`user_id` varchar(100) NOT NULL PRIMARY KEY,
+	`user_name` varchar(100),
+	`disp_name` varchar(16));
+
+CREATE TABLE `groups` (
+	`group_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`group_name` varchar(20),
+	`description` varchar(200));
+
+CREATE TABLE `rooms` (
+	`room_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`room_name` varchar(100));
+
+CREATE TABLE `services` (
+	`service_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`service_name` varchar(100));
+
+CREATE TABLE `authdata` (
+	`auth_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`user_id` varchar(100),
+	`service_id` int(11),
+	`id` varchar(100),
+	`valid_flag` tinyint(1),
+	FOREIGN KEY(`user_id`) REFERENCES `users`(`user_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`service_id`) REFERENCES `services`(`service_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `validated_timestamp` (
+	`timestamp_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`timestamp` timestamp);
+
+CREATE TABLE `validated_timestamp_scheduled` (
+	`timestamp_scheduled_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`days` tinyint(1),
+	`start_hours` tinyint(1),
+	`end_hours` tinyint(1));
+
+CREATE TABLE `available_count` (
+	`count_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`count` int(11));
+
+CREATE TABLE `logs` (
+	`log_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`time` timestamp,
+	`auth_id` int(11),
+	`is_lock` tinyint(1),
+	`room_id` int(11),
+	FOREIGN KEY(`auth_id`) REFERENCES `authdata`(`auth_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`room_id`) REFERENCES `rooms`(`room_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `fail_logs` (
+	`log_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`time` timestamp,
+	`service_id` int(11),
+	`id` varchar(100),
+	`room_id` int(11),
+	FOREIGN KEY(`service_id`) REFERENCES `services`(`service_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`room_id`) REFERENCES `rooms`(`room_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `groups_users` (
+	`group_id` int(11),
+	`user_id` varchar(100),
+	PRIMARY KEY (group_id,user_id),
+	FOREIGN KEY(`group_id`) REFERENCES `groups`(`group_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`user_id`) REFERENCES `users`(`user_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `rooms_groups` (
+	`room_id` int(11),
+	`group_id` int(11),
+	PRIMARY KEY (room_id,group_id),
+	FOREIGN KEY(`room_id`) REFERENCES `rooms`(`room_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`group_id`) REFERENCES `groups`(`group_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `rooms_users` (
+	`room_id` int(11),
+	`user_id` varchar(100),
+	PRIMARY KEY (room_id,user_id),
+	FOREIGN KEY(`room_id`) REFERENCES `rooms`(`room_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`user_id`) REFERENCES `users`(`user_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `auth_timestamp` (
+	`auth_id` int(11),
+	`timestamp_id` int(11),
+	PRIMARY KEY (auth_id,timestamp_id),
+	FOREIGN KEY(`auth_id`) REFERENCES `authdata`(`auth_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`timestamp_id`) REFERENCES `validated_timestamp`(`timestamp_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `auth_timestamp_scheduled` (
+	`auth_id` int(11),
+	`timestamp_scheduled_id` int(11),
+	PRIMARY KEY (auth_id,timestamp_scheduled_id),
+	FOREIGN KEY(`auth_id`) REFERENCES `authdata`(`auth_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`timestamp_scheduled_id`) REFERENCES `validated_timestamp_scheduled`(`timestamp_scheduled_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `auth_count` (
+	`auth_id` int(11),
+	`count_id` int(11),
+	PRIMARY KEY (auth_id,count_id),
+	FOREIGN KEY(`auth_id`) REFERENCES `authdata`(`auth_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`count_id`) REFERENCES `available_count`(`count_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `groups_timestamp` (
+	`group_id` int(11),
+	`timestamp_id` int(11),
+	PRIMARY KEY (group_id,timestamp_id),
+	FOREIGN KEY(`group_id`) REFERENCES `groups`(`group_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`timestamp_id`) REFERENCES `validated_timestamp`(`timestamp_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `groups_timestamp_scheduled` (
+	`group_id` int(11),
+	`timestamp_scheduled_id` int(11),
+	PRIMARY KEY (group_id,timestamp_scheduled_id),
+	FOREIGN KEY(`group_id`) REFERENCES `groups`(`group_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`timestamp_scheduled_id`) REFERENCES `validated_timestamp_scheduled`(`timestamp_scheduled_id`) ON UPDATE CASCADE ON DELETE CASCADE);
+
+CREATE TABLE `groups_count` (
+	`group_id` int(11),
+	`count_id` int(11),
+	PRIMARY KEY (group_id,count_id),
+	FOREIGN KEY(`group_id`) REFERENCES `groups`(`group_id`) ON UPDATE CASCADE ON DELETE CASCADE,
+	FOREIGN KEY(`count_id`) REFERENCES `available_count`(`count_id`) ON UPDATE CASCADE ON DELETE CASCADE);
