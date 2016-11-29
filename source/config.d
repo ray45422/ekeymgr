@@ -59,7 +59,37 @@ bool getRoomName(){
 		}
 		room_name = rows.row["room_name"];
 	}catch(MysqlDatabaseException e){
-		import std.stdio;
+		e.msg.writeln;
+		return false;
+	}
+}
+bool setRoomIPAddress(bool isClose){
+	string selfAddress;
+	if(isClose){
+		selfAddress = "NULL";
+	}else{
+		import std.socket;
+		import core.time;
+		auto address = new InternetAddress(mySQLServerAddress, cast(ushort)mySQLServerPort);
+		auto socket = new TcpSocket(AddressFamily.INET);
+		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.RCVTIMEO, dur!("seconds")(1));
+		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.SNDTIMEO, dur!("seconds")(1));
+		try{
+			socket.connect(address);
+			string selfAddress = socket.localAddress.toAddrString;
+			socket.close();
+		}catch(Exception e){
+			e.msg.writeln;
+			return false;
+		}
+	}
+	Mysql mysql = new Mysql();
+	mysql.setConnectTimeout(2);
+	try{
+		mysql.connect(mySQLServerAddress, mySQLServerPort, mySQLServerUserName, mySQLServerPassword, mySQLServerDatabase);
+		auto rows = mysql.query("UPDATE rooms SET ip_address='" ~ selfAddress ~ "' WHERE rooms.room_id=" ~ room_id_str);
+		rows.writeln;
+	}catch(MysqlDatabaseException e){
 		e.msg.writeln;
 		return false;
 	}

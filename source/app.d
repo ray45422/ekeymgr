@@ -38,7 +38,11 @@ int main(string[] args)
 			if(!userDaemonFlag){
 				import ekeymgr.systemdaemon;
 				SystemDaemon systemdaemon = new SystemDaemon();
+				if(!config.setRoomIPAddress(false)){
+					return false;
+				}
 				systemdaemon.main();
+				config.setRoomIPAddress(true);
 			}else{
 				import ekeymgr.userdaemon;
 				UserDaemon userdaemon = new UserDaemon();

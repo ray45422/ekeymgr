@@ -15,7 +15,9 @@ CREATE TABLE `groups` (
 
 CREATE TABLE `rooms` (
 	`room_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	`room_name` varchar(100));
+	`room_name` varchar(100),
+	`ip_address` varchar(15),
+	UNIQUE KEY(`ip_address`));
 INSERT INTO `rooms` (`room_id`,`room_name`) VALUES (NULL,'');
 
 CREATE TABLE `services` (
