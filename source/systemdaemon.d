@@ -37,6 +37,9 @@ public:
 			p.receive(buf);
 			format(buf).writeln;
 			string[] args = format(buf).split;
+			if(args.length == 0){
+				continue;
+			}
 			ExecResult result;
 			if(p.remoteAddress.toHostNameString == p.localAddress.toHostNameString){
 				result = exec(args);
