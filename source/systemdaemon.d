@@ -11,27 +11,9 @@ import core.stdc.stdlib;
 class SystemDaemon{
 public:
 	this(){
-		address = new UnixAddress(socket_name);
-		socket = new Socket(AddressFamily.UNIX, SocketType.STREAM);
-		if(exists(socket_name)){
-			try{
-				socket.connect(address);
-			}catch(SocketOSException e){
-				e.msg.writeln;
-				("remove " ~ socket_name ~ " and binding socket...").writeln;
-				if(e.errorCode == 111){
-					remove(socket_name);
-				}
-			}
-		}
-		try{
-			socket.bind(address);
-		}catch(SocketOSException e){
-			e.msg.writeln;
-			exit(EXIT_FAILURE);
-		}
-		auto n = getAttributes(socket_name);
-		setAttributes(socket_name, n | ((1<<9)-1));
+		address =  new InternetAddress(InternetAddress.ADDR_ANY,port);
+		socket = new TcpSocket(AddressFamily.INET);
+		socket.bind(address);
 		try{
 			userdaemon = new UserDaemon();
 		}catch(Exception e){
@@ -45,14 +27,14 @@ public:
 	void main(){
 		Thread t = new Thread(&userdaemon.main).start;
 		socket.listen(1);
-		("listening on " ~ socket_name).writeln;
+		("listening on " ~ address.toString).writeln;
 		scope(exit) socket.close();
-		scope(exit) remove(socket_name);
 		while(running){
 			auto p = socket.accept;
 			scope(exit) p.close();
 			auto buf = new char[255];
 			p.receive(buf);
+			format(buf).writeln;
 			string[] args = format(buf).split;
 			ExecResult result = exec(args);
 			string msg = "";
@@ -66,7 +48,7 @@ public:
 		t.join;
 	}
 private:
-	string socket_name = "/run/ekeymgr.sock";
+	ushort port = 1756;
 	Address address;
 	Socket socket;
 	bool running = true;
