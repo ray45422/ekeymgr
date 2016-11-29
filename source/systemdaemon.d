@@ -47,6 +47,8 @@ public:
 					result = exec(args);
 				}else if(args.length != 3){
 					result = new ExecResult(false, "Authentication required.");
+				}else{
+					result = exec(args);
 				}
 			}
 			string msg = "";
