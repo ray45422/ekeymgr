@@ -6,11 +6,16 @@ import core.thread;
 import serial.device;
 import serial.rcs620s;
 import ekeymgr.lockmanager;
+import dgpio;
 static import config = ekeymgr.config;
 
 class UserDaemon{
 public:
 	this(){
+		sw = new GPIO(2);
+		sw.setInput();
+		buz = new GPIO(22);
+		buz.setOutput();
 		roomName = config.room_name;
 		openMsg = config.load("openMsg", "Welcome!!");
 		closeMsg = config.load("closeMsg", "See you...");
@@ -25,6 +30,11 @@ public:
 			Thread.sleep(dur!("msecs")(500));
 			lcd.write(".");
 		}
+		while(sw.isHigh()){
+			buzzer();
+		}
+		buz.setLow();
+		lockMan.close();
 		lockMan.init();
 	}
 	public void main(){
@@ -54,6 +64,8 @@ private:
 	RCS620S rcs620s;
 	SerialPort lcd;
 	LockManager lockMan;
+	GPIO sw;
+	GPIO buz;
 	string roomName;
 	string openMsg;
 	string closeMsg;
@@ -65,6 +77,14 @@ private:
 			Thread.sleep(dur!("msecs")(500));
 			rcs620s.rfOff();
 		}
+		if(sw.isHigh()){
+			clearDisplay();
+			lcd.write("PleaseCloseDoor");
+		}
+		while(sw.isHigh() && running){
+			buzzer();
+		}
+		buz.setLow();
 		if(!running){
 			clearDisplay();
 			lcd.write("service not");
@@ -72,6 +92,8 @@ private:
 			lcd.write("available");
 			lcd.close();
 			rcs620s.close();
+			sw.deactivate;
+			buz.deactivate;
 			lockMan.stop;
 			return;
 		}
@@ -83,13 +105,24 @@ private:
 			AuthData ad = auth.getLastAuthData;
 			string disp_name = ad.getDispname;
 			lcd.write(lockMan.isLock?openMsg:closeMsg);
-			setPos(0,1);
-			lcd.write("" ~ disp_name);
+			setPos(cast(ubyte)(16-disp_name.length),1);
+			lcd.write(disp_name);
 			lockMan.toggle();
 			auth.addLog(lockMan.isLock);
 		}else{
 			lcd.write(failMsg);
+			setPos(0,1);
+			lcd.write(arrayHex(rcs620s.idm));
+			Thread.sleep(dur!("seconds")(2));
 		}
+	}
+	private void buzzer(){
+		if(buz.isHigh()){
+			buz.setLow();
+		}else{
+			buz.setHigh();
+		}
+		Thread.sleep(dur!("msecs")(50));
 	}
 	private void lcdUpdate(){
 		clearDisplay();
