@@ -77,14 +77,6 @@ private:
 			Thread.sleep(dur!("msecs")(500));
 			rcs620s.rfOff();
 		}
-		if(sw.isHigh()){
-			clearDisplay();
-			lcd.write("PleaseCloseDoor");
-		}
-		while(sw.isHigh() && running){
-			buzzer();
-		}
-		buz.setLow();
 		if(!running){
 			clearDisplay();
 			lcd.write("service not");
@@ -102,6 +94,14 @@ private:
 		int ret = auth.auth("FeliCa",arrayHex(rcs620s.idm));
 		clearDisplay();
 		if(ret == 0){
+			if(sw.isHigh()){
+				clearDisplay();
+				lcd.write("PleaseCloseDoor");
+			}
+			while(sw.isHigh() && running){
+				buzzer();
+			}
+			buz.setLow();
 			AuthData ad = auth.getLastAuthData;
 			string disp_name = ad.getDispname;
 			lcd.write(lockMan.isLock?openMsg:closeMsg);
