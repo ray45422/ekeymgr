@@ -60,9 +60,7 @@ int main(string[] args)
 		import std.socket;
 		import core.time;
 		import std.array;
-		auto name = "localhost";
-		ushort port = 1756;
-		auto address = new InternetAddress(name,port);
+		auto address = new InternetAddress(config.ekeymgrServerAddress, config.ekeymgrServerPort);
 		auto socket = new TcpSocket(AddressFamily.INET);
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.RCVTIMEO, dur!("seconds")(10));
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.SNDTIMEO, dur!("seconds")(10));

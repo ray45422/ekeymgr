@@ -1,4 +1,5 @@
 module ekeymgr.systemdaemon;
+static import config = ekeymgr.config;
 import ekeymgr.userdaemon;
 import ekeymgr.auth;
 import std.stdio;
@@ -11,7 +12,7 @@ import core.stdc.stdlib;
 class SystemDaemon{
 public:
 	this(){
-		address =  new InternetAddress(InternetAddress.ADDR_ANY,port);
+		address = new InternetAddress(config.ekeymgrServerPort);
 		socket = new TcpSocket(AddressFamily.INET);
 		socket.bind(address);
 		try{
@@ -48,7 +49,6 @@ public:
 		t.join;
 	}
 private:
-	ushort port = 1756;
 	Address address;
 	Socket socket;
 	bool running = true;

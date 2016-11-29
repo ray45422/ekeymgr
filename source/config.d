@@ -12,10 +12,13 @@ shared uint mySQLServerPort;
 shared string mySQLServerUserName;
 shared string mySQLServerPassword;
 shared string mySQLServerDatabase;
+shared string ekeymgrServerAddress;
+shared ushort ekeymgrServerPort;
 shared uint room_id;
 shared string room_name = "";
 
 bool init(){
+	auto a = cast(int)cast(ushort)1756;
 	if(!exists(configFile)){
 		"Config file does not exist".writeln;
 	}
@@ -25,6 +28,8 @@ bool init(){
 	mySQLServerUserName = load("mySQLServerUserName", "ekeymgr");
 	mySQLServerPassword = load("mySQLServerPassword", "ekeymgr");
 	mySQLServerDatabase = load("mySQLServerDatabase", "ekeymgr");
+	ekeymgrServerAddress = load("ekeymgrServerAddress", "localhost");
+	ekeymgrServerPort = load("ekeymgrServerPort", "1756").to!ushort;
 	room_id = load("room_id", 1);
 	if(!getRoomName()){
 		return false;
