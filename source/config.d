@@ -62,6 +62,7 @@ bool getRoomName(){
 		e.msg.writeln;
 		return false;
 	}
+	return true;
 }
 bool setRoomIPAddress(bool isClose){
 	string selfAddress;
@@ -76,7 +77,7 @@ bool setRoomIPAddress(bool isClose){
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.SNDTIMEO, dur!("seconds")(1));
 		try{
 			socket.connect(address);
-			string selfAddress = socket.localAddress.toAddrString;
+			selfAddress = socket.localAddress.toAddrString;
 			socket.close();
 		}catch(Exception e){
 			e.msg.writeln;
