@@ -37,7 +37,18 @@ public:
 			p.receive(buf);
 			format(buf).writeln;
 			string[] args = format(buf).split;
-			ExecResult result = exec(args);
+			ExecResult result;
+			if(p.remoteAddress.toHostNameString == p.localAddress.toHostNameString){
+				result = exec(args);
+			}else{
+				if(args[0] == "stop"){
+					result = new ExecResult(false, "Not allow to stop from outside.");
+				}else if(p.remoteAddress.toHostNameString == config.mySQLServerAddress　|| args[0] == "status"){
+					result = exec(args);
+				}else if(args.length != 3){
+					result = new ExecResult(false, "Authentication required.");
+				}
+			}
 			string msg = "";
 			if(result.isSuccess){
 				msg = "0\n";
