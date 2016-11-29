@@ -29,9 +29,9 @@ public:
 			rooms.room_id,
 			validated_timestamp.timestamp,
 			validated_timestamp_scheduled.days,validated_timestamp_scheduled.start_time,validated_timestamp_scheduled.end_time ";
-		string where = "WHERE (validated_timestamp.timestamp IS NULL OR validated_timestamp.timestamp>=TIMESTAMP(NOW())) AND
+		string where = "WHERE ((validated_timestamp.timestamp IS NULL OR validated_timestamp.timestamp>=TIMESTAMP(NOW())) OR
 			(validated_timestamp_scheduled.days IS NULL OR
-			(validated_timestamp_scheduled.days LIKE CONCAT('%',DAYOFWEEK(NOW()),'%') AND validated_timestamp_scheduled.start_time<=TIME(NOW()) AND validated_timestamp_scheduled.end_time>=TIME(NOW()))) AND
+			(validated_timestamp_scheduled.days LIKE CONCAT('%',DAYOFWEEK(NOW()),'%') AND validated_timestamp_scheduled.start_time<=TIME(NOW()) AND validated_timestamp_scheduled.end_time>=TIME(NOW())))) AND
 			services.service_name='" ~ service_name ~ "' AND authdata.id='" ~ id ~ "' AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'";
 		try{
 			//rows = mysql.query("SELECT services.*, authdata.*, users.* FROM authdata, services, users WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.user_id = users.user_id AND valid_flag = \'1\'");
