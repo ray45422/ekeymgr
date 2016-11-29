@@ -43,7 +43,7 @@ public:
 			}else{
 				if(args[0] == "stop"){
 					result = new ExecResult(false, "Not allow to stop from outside.");
-				}else if(p.remoteAddress.toHostNameString == config.mySQLServerAddress　|| args[0] == "status"){
+				}else if(p.remoteAddress.toHostNameString == config.mySQLServerAddress || args[0] == "status"){
 					result = exec(args);
 				}else if(args.length != 3){
 					result = new ExecResult(false, "Authentication required.");
