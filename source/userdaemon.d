@@ -92,7 +92,6 @@ private:
 		import ekeymgr.auth;
 		Auth auth = new Auth();
 		int ret = auth.auth("FeliCa",arrayHex(rcs620s.idm));
-		clearDisplay();
 		if(ret == 0){
 			if(sw.isHigh()){
 				clearDisplay();
@@ -104,6 +103,7 @@ private:
 			buz.setLow();
 			AuthData ad = auth.getLastAuthData;
 			string disp_name = ad.getDispname;
+			clearDisplay();
 			lcd.write(lockMan.isLock?openMsg:closeMsg);
 			setPos(cast(ubyte)(16-disp_name.length),1);
 			lcd.write(disp_name);
