@@ -15,6 +15,7 @@ public:
 		address = new InternetAddress(config.ekeymgrServerPort);
 		socket = new TcpSocket(AddressFamily.INET);
 		socket.bind(address);
+		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, true);
 		try{
 			userdaemon = new UserDaemon();
 		}catch(Exception e){
