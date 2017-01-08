@@ -14,8 +14,8 @@ public:
 	this(){
 		address = new InternetAddress(config.ekeymgrServerPort);
 		socket = new TcpSocket(AddressFamily.INET);
-		socket.bind(address);
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, true);
+		socket.bind(address);
 		try{
 			userdaemon = new UserDaemon();
 		}catch(Exception e){
