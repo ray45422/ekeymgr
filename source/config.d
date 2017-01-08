@@ -57,7 +57,7 @@ bool getRoomName(){
 			("room_id:" ~ room_id_str ~ " was not found").writeln;
 			return false;
 		}
-		room_name = rows.row["room_name"];
+		room_name = rows.row["room_name"].dup;
 	}catch(MysqlDatabaseException e){
 		e.msg.writeln;
 		return false;
