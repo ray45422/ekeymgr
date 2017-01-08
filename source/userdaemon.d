@@ -66,7 +66,7 @@ private:
 	LockManager lockMan;
 	GPIO sw;
 	GPIO buz;
-	string roomName;
+	immutable string roomName;
 	string openMsg;
 	string closeMsg;
 	string failMsg;
