@@ -42,12 +42,13 @@ public:
 				continue;
 			}
 			ExecResult result;
-			if(p.remoteAddress.toHostNameString == p.localAddress.toHostNameString){
+			auto remoteAddress = p.remoteAddress.toAddrString;
+			if(remoteAddress == p.localAddress.toHostNameString || remoteAddress == "127.0.0.1"){
 				result = exec(args);
 			}else{
 				if(args[0] == "stop"){
 					result = new ExecResult(false, "Not allow to stop from outside.");
-				}else if(p.remoteAddress.toHostNameString == config.mySQLServerAddress || args[0] == "status"){
+				}else if(remoteAddress == config.mySQLServerAddress || args[0] == "status"){
 					result = exec(args);
 				}else if(args.length != 3){
 					result = new ExecResult(false, "Authentication required.");
