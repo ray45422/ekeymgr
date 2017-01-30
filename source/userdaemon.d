@@ -27,14 +27,10 @@ public:
 		clearDisplay();
 		lcd.write("init");
 		while(!rcs620s.init()){
-			Thread.sleep(dur!("msecs")(500));
+			Thread.sleep(dur!("msecs")(1000));
 			lcd.write(".");
 		}
-		while(sw.isHigh()){
-			buzzer();
-		}
-		buz.setLow();
-		lockMan.close();
+		lockMan.open();
 		lockMan.init();
 	}
 	public void main(){
