@@ -110,6 +110,7 @@ private:
 			lockMan.toggle();
 			auth.addLog(lockMan.isLock);
 		}else{
+			clearDisplay();
 			lcd.write(failMsg);
 			setPos(0,1);
 			lcd.write(arrayHex(rcs620s.idm));
