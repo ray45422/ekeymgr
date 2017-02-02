@@ -87,7 +87,7 @@ private:
 		}
 		import ekeymgr.auth;
 		Auth auth = new Auth();
-		int ret = auth.auth("FeliCa",arrayHex(rcs620s.idm));
+		int ret = auth.authServiceId("FeliCa",arrayHex(rcs620s.idm));
 		if(ret == 0){
 			if(sw.isHigh()){
 				clearDisplay();

@@ -21,31 +21,23 @@ public:
 		}
 		writeln("connected");
 	}
-	byte auth(string service_name, string id){
+	byte authServiceId(string service_name, string id){
+		string SQLwhere = " services.service_name='" ~ service_name ~ "' AND authdata.id='" ~ id ~ "'";
+		byte ret = auth(SQLwhere);
+		if(ret == 64){
+			addFailLog(service_name, id);
+		}
+		return ret;
+	}
+	byte authUserId(string user, string id){
+		string SQLwhere = " authdata.user_id='" ~ user ~ "' AND authdata.id='" ~ id ~ "'";
+		return auth(SQLwhere);
+	}
+	byte auth(string statement){
 		MysqlResult rows;
-		string select = "SELECT users.user_id,users.user_name,users.disp_name,
-			authdata.id,authdata.auth_id,
-			services.service_name,services.service_id,
-			rooms.room_id,
-			validated_timestamp.timestamp,
-			validated_timestamp_scheduled.days,validated_timestamp_scheduled.start_time,validated_timestamp_scheduled.end_time ";
-		string where = "WHERE (
-				(validated_timestamp.timestamp IS NULL AND validated_timestamp_scheduled.days IS NULL) OR
-				(validated_timestamp.timestamp>=TIMESTAMP(NOW()))
-				OR (validated_timestamp_scheduled.days LIKE CONCAT('%',DAYOFWEEK(NOW()),'%') AND validated_timestamp_scheduled.start_time<=TIME(NOW()) AND validated_timestamp_scheduled.end_time>=TIME(NOW())))AND
-			services.service_name='" ~ service_name ~ "' AND authdata.id='" ~ id ~ "' AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'";
 		try{
-			//rows = mysql.query("SELECT services.*, authdata.*, users.* FROM authdata, services, users WHERE services.service_id=authdata.service_id AND services.service_name=\'" ~ service_name ~ "\' AND authdata.id=\'" ~ service_id ~ "\' AND authdata.user_id = users.user_id AND valid_flag = \'1\'");
-			rows = mysql.query(select ~ "FROM rooms
-				LEFT JOIN rooms_users ON (rooms.room_id=rooms_users.room_id)
-				JOIN authdata ON (rooms_users.user_id=authdata.user_id)
-				LEFT JOIN (users,services)
-					ON (authdata.user_id=users.user_id AND authdata.service_id=services.service_id)
-				LEFT JOIN (validated_timestamp,auth_timestamp)
-					ON (authdata.auth_id=auth_timestamp.auth_id AND validated_timestamp.timestamp_id=auth_timestamp.timestamp_id)
-				LEFT JOIN (validated_timestamp_scheduled,auth_timestamp_scheduled)
-					ON (authdata.auth_id=auth_timestamp_scheduled.auth_id AND validated_timestamp_scheduled.timestamp_scheduled_id=auth_timestamp_scheduled.timestamp_scheduled_id) "~
-				where
+			rows = mysql.query(SQLselect ~ SQLjoin ~ SQLwherePre ~ statement ~
+				" AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'"
 			);
 		}catch(MysqlDatabaseException e){
 			e.msg.writeln;
@@ -54,17 +46,8 @@ public:
 		}
 		if(rows.length == 0){
 			try{
-				rows = mysql.query(select ~ "FROM rooms
-					LEFT JOIN rooms_groups ON (rooms_groups.room_id=rooms.room_id)
-					LEFT JOIN groups_users ON (rooms_groups.group_id=groups_users.group_id)
-					JOIN authdata ON (groups_users.user_id=authdata.user_id)
-					LEFT JOIN (users,services)
-						ON (authdata.user_id=users.user_id AND authdata.service_id=services.service_id)
-					LEFT JOIN (validated_timestamp,auth_timestamp)
-						ON (authdata.auth_id=auth_timestamp.auth_id AND validated_timestamp.timestamp_id=auth_timestamp.timestamp_id)
-					LEFT JOIN (validated_timestamp_scheduled,auth_timestamp_scheduled)
-						ON (authdata.auth_id=auth_timestamp_scheduled.auth_id AND validated_timestamp_scheduled.timestamp_scheduled_id=auth_timestamp_scheduled.timestamp_scheduled_id) " ~
-					where
+				rows = mysql.query(SQLselect ~ SQLjoinGroup ~ SQLwherePre ~ statement ~
+					" AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'"
 				);
 			}catch(MysqlDatabaseException e){
 				e.msg.writeln;
@@ -73,7 +56,6 @@ public:
 			}
 			if(rows.length == 0){
 				_isSuccess = false;
-				addFailLog(service_name, id);
 				return 64;//合致するIDが見つからない
 			}
 		}
@@ -104,6 +86,35 @@ public:
 		return _isSuccess;
 	}
 private:
+	const static string SQLselect = "SELECT users.user_id,users.user_name,users.disp_name,
+		authdata.id,authdata.auth_id,
+		services.service_name,services.service_id,
+		rooms.room_id,
+		validated_timestamp.timestamp,
+		validated_timestamp_scheduled.days,validated_timestamp_scheduled.start_time,validated_timestamp_scheduled.end_time ";
+	const static string SQLjoin = "FROM rooms
+		LEFT JOIN rooms_users ON (rooms.room_id=rooms_users.room_id)
+		JOIN authdata ON (rooms_users.user_id=authdata.user_id)
+		LEFT JOIN (users,services)
+			ON (authdata.user_id=users.user_id AND authdata.service_id=services.service_id)
+		LEFT JOIN (validated_timestamp,auth_timestamp)
+			ON (authdata.auth_id=auth_timestamp.auth_id AND validated_timestamp.timestamp_id=auth_timestamp.timestamp_id)
+		LEFT JOIN (validated_timestamp_scheduled,auth_timestamp_scheduled)
+			ON (authdata.auth_id=auth_timestamp_scheduled.auth_id AND validated_timestamp_scheduled.timestamp_scheduled_id=auth_timestamp_scheduled.timestamp_scheduled_id) ";
+	const static string SQLjoinGroup = "FROM rooms
+		LEFT JOIN rooms_groups ON (rooms_groups.room_id=rooms.room_id)
+		LEFT JOIN groups_users ON (rooms_groups.group_id=groups_users.group_id)
+		JOIN authdata ON (groups_users.user_id=authdata.user_id)
+		LEFT JOIN (users,services)
+			ON (authdata.user_id=users.user_id AND authdata.service_id=services.service_id)
+		LEFT JOIN (validated_timestamp,auth_timestamp)
+			ON (authdata.auth_id=auth_timestamp.auth_id AND validated_timestamp.timestamp_id=auth_timestamp.timestamp_id)
+		LEFT JOIN (validated_timestamp_scheduled,auth_timestamp_scheduled)
+			ON (authdata.auth_id=auth_timestamp_scheduled.auth_id AND validated_timestamp_scheduled.timestamp_scheduled_id=auth_timestamp_scheduled.timestamp_scheduled_id) ";
+	const static string SQLwherePre = "WHERE (
+			(validated_timestamp.timestamp IS NULL AND validated_timestamp_scheduled.days IS NULL) OR
+			(validated_timestamp.timestamp>=TIMESTAMP(NOW()))
+			OR (validated_timestamp_scheduled.days LIKE CONCAT('%',DAYOFWEEK(NOW()),'%') AND validated_timestamp_scheduled.start_time<=TIME(NOW()) AND validated_timestamp_scheduled.end_time>=TIME(NOW())))AND ";
 	Mysql mysql;
 	AuthData lastAuthData;
 	bool _isSuccess;

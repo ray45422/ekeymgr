@@ -48,14 +48,14 @@ int main(string[] args)
 				userdaemon.main();
 			}
 			return 0;
-		case "auth":
+		/*case "auth":
 			if(args.length != 4){
 				"Too few arguments.".writeln;
 				return 1;
 			}
 			import ekeymgr.auth;
 			Auth auth = new Auth();
-			return auth.auth(args[2], args[3]);
+			return auth.auth(args[2], args[3]);*/
 		default:
 			break;
 	}

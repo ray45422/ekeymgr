@@ -136,7 +136,7 @@ private:
 		_auth = new Auth();
 		bool result = true;
 		if(args.length == 3){
-			result = _auth.auth(args[1], args[2]) == 0;
+			result = _auth.authUserId(args[1], args[2]) == 0;
 		}
 		return result;
 	}
