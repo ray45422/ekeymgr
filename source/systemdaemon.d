@@ -134,10 +134,8 @@ private:
 	}
 	bool auth(string[] args){
 		_auth = new Auth();
-		bool result;
-		if(args.length != 3){
-			result = _auth.auth("ekeymgr","ekeymgr") == 0;
-		}else{
+		bool result = true;
+		if(args.length == 3){
 			result = _auth.auth(args[1], args[2]) == 0;
 		}
 		return result;
