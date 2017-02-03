@@ -144,9 +144,9 @@ private:
 		bool result = true;
 		if(args.length == 3){
 			if(serviceIdAuthFlag){
-				result = _auth.authUserId(args[1], args[2]) == 0;
-			}else{
 				result = _auth.authServiceId(args[1], args[2]) == 0;
+			}else{
+				result = _auth.authUserId(args[1], args[2]) == 0;
 			}
 		}
 		return result;
