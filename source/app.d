@@ -8,11 +8,13 @@ int main(string[] args)
 	/*オプション処理*/
 	bool versionFlag = false;
 	bool userDaemonFlag = false;
+	bool serviceIdAuthFlag = false;
 	try{
 		getopt(args,
 			"v",&versionFlag,
 			"version",&versionFlag,
-			"user", &userDaemonFlag);
+			"user", &userDaemonFlag,
+			"service-id-auth", &serviceIdAuthFlag);
 	}catch(GetOptException e){
 		e.msg.writeln;
 		return 1;
@@ -60,5 +62,8 @@ int main(string[] args)
 			break;
 	}
 	static import client = ekeymgr.client;
+	if(serviceIdAuthFlag){
+		args = args ~ "--service-id-auth";
+	}
 	return client.connect(args);
 }

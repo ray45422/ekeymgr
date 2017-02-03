@@ -7,6 +7,7 @@ import std.socket;
 import std.file;
 import std.string;
 import std.array;
+import std.getopt;
 import core.thread;
 import core.stdc.stdlib;
 class SystemDaemon{
@@ -32,6 +33,7 @@ public:
 		("listening on " ~ address.toString).writeln;
 		scope(exit) socket.close();
 		while(running){
+			serviceIdAuthFlag = false;
 			auto p = socket.accept;
 			scope(exit) p.close();
 			auto buf = new char[255];
@@ -40,6 +42,10 @@ public:
 			string[] args = format(buf).split;
 			if(args.length == 0){
 				continue;
+			}
+			try{
+				getopt(args, "service-id-auth", &serviceIdAuthFlag);
+			}catch(Exception e){
 			}
 			ExecResult result;
 			auto remoteAddress = p.remoteAddress.toAddrString;
@@ -67,6 +73,7 @@ public:
 		t.join;
 	}
 private:
+	bool serviceIdAuthFlag = false;
 	Address address;
 	Socket socket;
 	bool running = true;
@@ -136,7 +143,11 @@ private:
 		_auth = new Auth();
 		bool result = true;
 		if(args.length == 3){
-			result = _auth.authUserId(args[1], args[2]) == 0;
+			if(serviceIdAuthFlag){
+				result = _auth.authUserId(args[1], args[2]) == 0;
+			}else{
+				result = _auth.authServiceId(args[1], args[2]) == 0;
+			}
 		}
 		return result;
 	}
