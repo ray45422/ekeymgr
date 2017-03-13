@@ -1,0 +1,3 @@
+#!/bin/bash
+dub build --compiler=ldc --build=${1:-release} --parallel
+
