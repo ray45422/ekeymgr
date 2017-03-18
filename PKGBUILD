@@ -10,7 +10,6 @@ arch=('any')
 
 source=('git+https://github.com/ray45422/ekeymgr.git')
 md5sums=('SKIP')
-srcdir="source"
 
 build(){
 	cd ${srcdir}/${pkgname}
