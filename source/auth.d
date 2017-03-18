@@ -22,47 +22,14 @@ public:
 		writeln("connected");
 	}
 	byte authServiceId(string service_name, string id){
-		string SQLwhere = " services.service_name='" ~ service_name ~ "' AND authdata.id='" ~ id ~ "'";
-		byte ret = auth(SQLwhere);
+		byte ret = auth(AuthType.ServiceId, service_name, id);
 		if(ret == 64){
 			addFailLog(service_name, id);
 		}
 		return ret;
 	}
 	byte authUserId(string user, string id){
-		string SQLwhere = " authdata.user_id='" ~ user ~ "' AND authdata.id='" ~ id ~ "'";
-		return auth(SQLwhere);
-	}
-	byte auth(string statement){
-		MysqlResult rows;
-		try{
-			rows = mysql.query(SQLselect ~ SQLjoin ~ SQLwherePre ~ statement ~
-				" AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'"
-			);
-		}catch(MysqlDatabaseException e){
-			e.msg.writeln;
-			_isSuccess = false;
-			return 1;
-		}
-		if(rows.length == 0){
-			try{
-				rows = mysql.query(SQLselect ~ SQLjoinGroup ~ SQLwherePre ~ statement ~
-					" AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'"
-				);
-			}catch(MysqlDatabaseException e){
-				e.msg.writeln;
-				_isSuccess = false;
-				return 1;
-			}
-			if(rows.length == 0){
-				_isSuccess = false;
-				return 64;//合致するIDが見つからない
-			}
-		}
-		lastAuthData = new AuthData(rows.row);
-		//lastAuthData.write();
-		_isSuccess = true;
-		return 0;//合致するIDが見つかった
+		return auth(AuthType.UserId, user, id);
 	}
 	AuthData getLastAuthData(){
 		return lastAuthData;
@@ -118,6 +85,81 @@ private:
 	Mysql mysql;
 	AuthData lastAuthData;
 	bool _isSuccess;
+	enum AuthType{
+		UserId,
+		ServiceId
+	}
+	byte auth(AuthType type, string name, string id){
+		MysqlResult rows;
+		string SQLwhere;
+		switch(type){
+			case AuthType.UserId:
+				//SQLwhere = " authdata.user_id='" ~ user ~ "' AND authdata.id='" ~ id ~ "'";
+				SQLwhere = " authdata.user_id='" ~ name ~ "'";
+				break;
+			case AuthType.ServiceId:
+				//SQLwhere = " services.service_name='" ~ service_name ~ "' AND authdata.id='" ~ id ~ "'";
+				SQLwhere = " services.service_name='" ~ name ~ "'";
+				break;
+			default:
+				break;
+		}
+
+		//normal authentication
+		try{
+			rows = inquery(SQLselect ~ SQLjoin ~ SQLwherePre ~ SQLwhere ~
+				" AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'"
+			);
+		}catch(MysqlDatabaseException e){
+			return 1;
+		}
+		if(rows.length != 0){
+			if(idMatch(rows, id)){
+				return 0;
+			}
+		}
+
+		//group authentication
+		try{
+			rows = inquery(SQLselect ~ SQLjoinGroup ~ SQLwherePre ~ SQLwhere ~
+				" AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.room_id_str ~ "'"
+			);
+		}catch(MysqlDatabaseException e){
+			return 1;
+		}
+		if(rows.length != 0){
+			if(idMatch(rows, id)){
+				return 0;
+			}
+		}
+		//match IDs not found
+		_isSuccess = false;
+		return 64;
+	}
+	bool idMatch(MysqlResult rows, string id){
+		foreach(MysqlRow row; rows){
+			if(row["id"]==id){
+				record(new AuthData(row));
+				return true;
+			}
+		}
+		return false;
+	}
+	MysqlResult inquery(string statement){
+		MysqlResult rows;
+		try{
+			rows = mysql.query(statement);
+		}catch(MysqlDatabaseException e){
+			e.msg.writeln;
+			_isSuccess = false;
+			throw e;
+		}
+		return rows;
+	}
+	void record(AuthData data){
+		lastAuthData = data;
+		_isSuccess = true;
+	}
 	bool addFailLog(string service_name,string id){
 		try{
 			auto rows = mysql.query("SELECT services.service_id FROM services WHERE services.service_name='" ~ service_name ~ "'");
