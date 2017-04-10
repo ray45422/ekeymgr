@@ -34,10 +34,16 @@ class Hash{
 				default:
 					break;
 			}
-			return result;
+			return result.dup;
 		}
 	}
 	private{
 		string data;
 	}
+}
+
+unittest
+{
+	auto hash = new Hash("abc");
+	assert(hash.generate() == "49B346DABA11964AC8CCC932BE76E84666AA5DE22B48B1060A7756C1F452DE7FV1");
 }
