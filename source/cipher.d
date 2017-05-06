@@ -41,6 +41,19 @@ private:
 	string data;
 }
 
+int hashGen(){
+	import std.string;
+	while(true){
+		auto str = readln.chomp;
+		if(str == ""){
+			break;
+		}
+		auto hash = new Hash(str);
+		hash.generate.writeln;
+	}
+	return 0;
+}
+
 unittest
 {
 	auto hash = new Hash("abc");

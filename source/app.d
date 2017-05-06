@@ -32,7 +32,7 @@ int main(string[] args)
 	}
 	if(!config.init()){
 		"Setup failed".writeln;
-		return 1;
+		//return 1;
 	}
 	switch(args[1]){
 		case "daemon":
@@ -58,6 +58,9 @@ int main(string[] args)
 			import ekeymgr.auth;
 			Auth auth = new Auth();
 			return auth.auth(args[2], args[3]);*/
+		case "hashGen":
+			static import cipher = ekeymgr.cipher;
+			return cipher.hashGen();
 		default:
 			break;
 	}
