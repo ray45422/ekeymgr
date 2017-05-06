@@ -50,14 +50,18 @@ int main(string[] args)
 				userdaemon.main();
 			}
 			return 0;
-		/*case "auth":
+		case "auth":
 			if(args.length != 4){
 				"Too few arguments.".writeln;
 				return 1;
 			}
 			import ekeymgr.auth;
 			Auth auth = new Auth();
-			return auth.auth(args[2], args[3]);*/
+			if(serviceIdAuthFlag){
+				return auth.authServiceId(args[2], args[3]);
+			}else{
+				return auth.authUserId(args[2], args[3]);
+			}
 		case "hashGen":
 			static import cipher = ekeymgr.cipher;
 			return cipher.hashGen();
