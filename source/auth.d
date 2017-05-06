@@ -137,8 +137,10 @@ private:
 		return 64;
 	}
 	bool idMatch(MysqlResult rows, string id){
+		import ekeymgr.cipher;
 		foreach(MysqlRow row; rows){
-			if(row["id"]==id){
+			auto hash = new Hash(row["id"]);
+			if(hash.generate == id){
 				record(new AuthData(row));
 				return true;
 			}
