@@ -19,7 +19,7 @@ int main(string[] args)
 		stderr.writeln(e.msg);
 		return 1;
 	}catch(std.conv.ConvException e){
-		"Sorry. Please use single character options.".writeln;
+		stderr.writeln("Sorry. Please use single character options.");
 		return 1;
 	}
 	if(versionFlag){
@@ -32,8 +32,7 @@ int main(string[] args)
 		return 0;
 	}
 	if(!config.init()){
-		"Setup failed".writeln;
-		stdout.flush;
+		stderr.writeln("Setup failed");
 		return 1;
 	}
 	switch(args[1]){

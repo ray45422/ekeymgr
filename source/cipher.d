@@ -50,6 +50,7 @@ int hashGen(){
 		}
 		auto hash = new Hash(str);
 		hash.generate.writeln;
+		stdout.flush;
 	}
 	return 0;
 }

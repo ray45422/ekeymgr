@@ -8,8 +8,6 @@ import mysql.d;
 class Auth{
 public:
 	this(){
-		writeln("connecting database...");
-		stdout.flush;
 		mysql = new Mysql();
 		mysql.setConnectTimeout(2);
 		try{
@@ -20,8 +18,6 @@ public:
 			stderr.writeln(e.msg);
 			exit(EXIT_FAILURE);
 		}
-		writeln("connected");
-		stdout.flush;
 	}
 	byte authServiceId(string service_name, string id){
 		byte ret = auth(AuthType.ServiceId, service_name, id);
