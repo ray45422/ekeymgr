@@ -65,6 +65,9 @@ int main(string[] args)
 			}else{
 				return auth.authUserId(args[2], args[3]);
 			}
+		case "hashGen":
+			static import cipher = ekeymgr.cipher;
+			return cipher.hashGen();
 		default:
 			break;
 	}
