@@ -20,7 +20,7 @@ public:
 		try{
 			userdaemon = new UserDaemon();
 		}catch(Exception e){
-			e.msg.writeln;
+			stderr.writeln(e.msg);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -31,6 +31,7 @@ public:
 		Thread t = new Thread(&userdaemon.main).start;
 		socket.listen(1);
 		("listening on " ~ address.toString).writeln;
+		stdout.flush;
 		scope(exit) socket.close();
 		while(running){
 			serviceIdAuthFlag = false;
@@ -39,6 +40,7 @@ public:
 			auto buf = new char[255];
 			p.receive(buf);
 			format(buf).writeln;
+			stdout.flush;
 			string[] args = format(buf).split;
 			if(args.length == 0){
 				continue;
@@ -119,6 +121,7 @@ private:
 				return new ExecResult(true, msg);
 			case "stop":
 				"stopping daemon...".writeln;
+				stdout.flush();
 				stop();
 				return new ExecResult(true, "stopping daemon...");
 			default:

@@ -69,6 +69,7 @@ private:
 	private void loop(){
 		lcdUpdate();
 		"polling start".writeln;
+		stdout.flush;
 		while(!rcs620s.polling() && running){
 			Thread.sleep(dur!("msecs")(500));
 			rcs620s.rfOff();

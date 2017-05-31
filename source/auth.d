@@ -9,6 +9,7 @@ class Auth{
 public:
 	this(){
 		writeln("connecting database...");
+		stdout.flush;
 		mysql = new Mysql();
 		mysql.setConnectTimeout(2);
 		try{
@@ -16,10 +17,11 @@ public:
 		}catch(MysqlDatabaseException e){
 			import std.stdio;
 			import core.stdc.stdlib;
-			e.msg.writeln;
+			stderr.writeln(e.msg);
 			exit(EXIT_FAILURE);
 		}
 		writeln("connected");
+		stdout.flush;
 	}
 	byte authServiceId(string service_name, string id){
 		byte ret = auth(AuthType.ServiceId, service_name, id);
@@ -44,7 +46,7 @@ public:
 		try{
 			mysql.query("INSERT INTO `logs` (`log_id`, `time`, `auth_id`, `room_id`, `is_lock`) VALUES (NULL, CURRENT_TIMESTAMP, '" ~ auth_id ~ "', '" ~ room_id ~ "','" ~ is_lock ~ "')");
 		}catch(MysqlDatabaseException e){
-			e.msg.writeln;
+			stderr.writeln(e.msg);
 			return false;
 		}
 		return true;
@@ -150,7 +152,7 @@ private:
 		try{
 			rows = mysql.query(statement);
 		}catch(MysqlDatabaseException e){
-			e.msg.writeln;
+			stderr.writeln(e.msg);
 			_isSuccess = false;
 			throw e;
 		}
@@ -169,7 +171,7 @@ private:
 			string service_id = rows.row["service_id"];
 			mysql.query("INSERT INTO `fail_logs` (`log_id`,`time`,`service_id`,`id`,`room_id`) VALUES(NULL,CURRENT_TIMESTAMP,'" ~ service_id ~ "','" ~ id ~ "','" ~ config.room_id_str ~ "')");
 		}catch(MysqlDatabaseException e){
-			e.msg.writeln;
+			stderr.writeln(e.msg);
 			return false;
 		}
 		return true;
@@ -203,6 +205,7 @@ public:
 			id,
 			service_name,
 			service_id);
+		stdout.flush;
 	}
 private:
 	string user_id;

@@ -20,7 +20,7 @@ shared string room_name = "";
 bool init(){
 	auto a = cast(int)cast(ushort)1756;
 	if(!exists(configFile)){
-		"Config file does not exist".writeln;
+		stderr.writeln("Config file does not exist");
 	}
 	configs.loadFile(configFile);
 	mySQLServerAddress = load("mySQLServerAddress", "127.0.0.1");
@@ -54,12 +54,12 @@ bool getRoomName(){
 		auto rows = mysql.query("SELECT rooms.room_name FROM rooms WHERE rooms.room_id='" ~ room_id_str ~ "'");
 		if(rows.length == 0){
 			import std.stdio;
-			("room_id:" ~ room_id_str ~ " was not found").writeln;
+			stderr.writeln("room_id:" ~ room_id_str ~ " was not found");
 			return false;
 		}
 		room_name = rows.row["room_name"].dup;
 	}catch(MysqlDatabaseException e){
-		e.msg.writeln;
+		stderr.writeln(e.msg);
 		return false;
 	}
 	return true;
@@ -80,7 +80,7 @@ bool setRoomIPAddress(bool isClose){
 			selfAddress = socket.localAddress.toAddrString;
 			socket.close();
 		}catch(Exception e){
-			e.msg.writeln;
+			stderr.writeln(e.msg);
 			return false;
 		}
 	}
@@ -90,8 +90,9 @@ bool setRoomIPAddress(bool isClose){
 		mysql.connect(mySQLServerAddress, mySQLServerPort, mySQLServerUserName, mySQLServerPassword, mySQLServerDatabase);
 		auto rows = mysql.query("UPDATE rooms SET ip_address='" ~ selfAddress ~ "' WHERE rooms.room_id=" ~ room_id_str);
 		rows.writeln;
+		stdout.flush;
 	}catch(MysqlDatabaseException e){
-		e.msg.writeln;
+		stderr.writeln(e.msg);
 		return false;
 	}
 	return true;

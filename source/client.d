@@ -14,8 +14,8 @@ int connect(string[] args){
 	try{
 		socket.connect(address);
 	}catch(SocketOSException e){
-		e.msg.writeln;
-		"Run \'systemctl start ekeymgr.service\' or \'ekeymgr daemon\' as root.".writeln;
+		stderr.writeln(e.msg);
+		stderr.writeln("Run \'systemctl start ekeymgr.service\' or \'ekeymgr daemon\' as root.");
 		return 1;
 	}
 	scope(exit) socket.close;
@@ -28,13 +28,13 @@ int connect(string[] args){
 	socket.receive(buf);
 	string[] receive = format(buf).split('\n');
 	if(receive.length == 0){
-		"error".writeln;
 		return 1;
 	}else{
 		string code = receive[0];
 		receive = receive[1..receive.length];
 		foreach(msg ; receive){
 			msg.writeln;
+			stdout.flush;
 		}
 		if(code != "0"){
 			return 1;

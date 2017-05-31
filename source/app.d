@@ -16,7 +16,7 @@ int main(string[] args)
 			"user", &userDaemonFlag,
 			"service-id-auth", &serviceIdAuthFlag);
 	}catch(GetOptException e){
-		e.msg.writeln;
+		stderr.writeln(e.msg);
 		return 1;
 	}catch(std.conv.ConvException e){
 		"Sorry. Please use single character options.".writeln;
@@ -24,6 +24,7 @@ int main(string[] args)
 	}
 	if(versionFlag){
 		("ekeymgr "~versionString).writeln;
+		stdout.flush;
 		return 0;
 	}
 	/*各種処理開始*/
@@ -32,6 +33,7 @@ int main(string[] args)
 	}
 	if(!config.init()){
 		"Setup failed".writeln;
+		stdout.flush;
 		return 1;
 	}
 	switch(args[1]){
@@ -53,6 +55,7 @@ int main(string[] args)
 		case "auth":
 			if(args.length != 4){
 				"Too few arguments.".writeln;
+				stdout.flush;
 				return 1;
 			}
 			import ekeymgr.auth;
