@@ -32,7 +32,7 @@ int main(string[] args)
 	}
 	if(!config.init()){
 		"Setup failed".writeln;
-		//return 1;
+		return 1;
 	}
 	switch(args[1]){
 		case "daemon":
