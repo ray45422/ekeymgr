@@ -27,18 +27,18 @@ function user_detail($user_id){
 	}else{
 		die();
 	}
-	$query = 'SELECT auth_id,service_name,id,valid_flag FROM authdata,services WHERE services.service_id=authdata.service_id AND authdata.user_id=\''.$user_id.'\'';
+	$query = 'SELECT auth_id,service_name,valid_flag FROM authdata,services WHERE services.service_id=authdata.service_id AND authdata.user_id=\''.$user_id.'\'';
 	if($result = $mysqli->query($query)){
-		$titles = ["#","認証方法","id","状態"];
+		$titles = ["#","認証方法","状態"];
 		$table = new Table($titles);
 		while($row = $result->fetch_array()){
 			$row[0] = makelink("#".$row[0], "keys.html", "authid=".$row[0]);
-			if($row[3] === '0'){
-				$row[3] = "無効";
-			}else if($row[3] === '1'){
-				$row[3] = "有効";
+			if($row[2] === '0'){
+				$row[2] = "無効";
+			}else if($row[2] === '1'){
+				$row[2] = "有効";
 			}
-			$row[3] = makelink($row[3], "keys.html", "authid=".$row["auth_id"], "valid=".(1-$row["valid_flag"]));
+			$row[2] = makelink($row[2], "keys.html", "authid=".$row["auth_id"], "valid=".(1-$row["valid_flag"]));
 			$table->add($row);
 		}
 		$table->close();
