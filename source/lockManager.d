@@ -13,8 +13,10 @@ private:
 public:
 	this(){
 		import core.time;
-		servo = new Servo();
-		servo.setAutoStop(dur!("seconds")(1));
+		servo = new Servo()
+			.setAutoStop(dur!("seconds")(1))
+			.setSleepOffset(dur!("usecs")(150))
+			.setRange(700, 2300);
 		sw = new GPIO(2);
 		sw.setInput();
 	}
