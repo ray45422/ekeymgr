@@ -16,6 +16,7 @@
 				<p>Welcome to ekeymgr control panel!</p>
 				<p><br>上のメニューから操作してください</p>
 			</div>
+			<a href="php/restart.php">再起動</a>
 		</div>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 		<script src="/js/bootstrap.min.js"></script>

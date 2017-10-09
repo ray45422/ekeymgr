@@ -1,7 +1,12 @@
 <?php
-if(basename($_SERVER['PHP_SELF']) !== 'keys.html'){
+if(basename($_SERVER['PHP_SELF']) !== 'keys.php'){
 	die();
 }
+include('php/login.php');
+$title = "認証情報管理";
+include('resources/head.php');
+include_once('php/db_login.php');
+include_once('php/utils.php');
 if(isset($_GET["authid"])){
 	$auth_id = htmlentities($_GET["authid"]);
 	if(isset($_GET["valid"])){
@@ -14,8 +19,6 @@ if(isset($_GET["authid"])){
 	key_table();
 }
 function key_detail($auth_id){
-	include('db_login.php');
-	include('utils.php');
 	$mysqli = db_connect();
 	$query = 'SELECT auth_id,user_id,service_name,valid_flag FROM authdata,services WHERE services.service_id=authdata.service_id AND authdata.auth_id='.$auth_id;
 	if($result = $mysqli->query($query)){
@@ -76,7 +79,6 @@ function key_detail($auth_id){
 	$container->close();
 }
 function key_table(){
-	include('db_login.php');
 	if(isset($_GET["page"])){
 		$page = htmlentities($_GET["page"]);
 	}else{
@@ -102,7 +104,6 @@ function key_table(){
 	}
 	$query = 'SELECT auth_id,user_id,service_name,valid_flag FROM authdata,services WHERE services.service_id=authdata.service_id AND authdata.auth_id LIMIT '.$keys_per_page.' OFFSET '.(($page-1) * $keys_per_page);
 	if($result = $mysqli->query($query)){
-		include('utils.php');
 		$titles = ["#","所有者","認証方法","状態"];
 		$container = new Container();
 		$pagination = new Pagination("keys.html",$page,$pages);
@@ -124,7 +125,6 @@ function key_table(){
 	}
 }
 function set_key_valid($auth_id, $status){
-	include('db_login.php');
 	if(!isset($address)){
 		$address = "./keys.html";
 	}
@@ -142,4 +142,5 @@ function set_key_valid($auth_id, $status){
 		header('Location:'.$_SERVER['HTTP_REFERER']);
 	}
 }
+include('resources/foot.php');
 ?>

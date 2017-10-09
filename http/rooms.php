@@ -1,7 +1,12 @@
 <?php
-if(basename($_SERVER['PHP_SELF']) !== 'rooms.html'){
+if(basename($_SERVER['PHP_SELF']) !== 'rooms.php'){
 	die();
 }
+include('php/login.php');
+$title = '部屋管理';
+include('resources/head.php');
+include_once('php/db_login.php');
+include_once('php/utils');
 if(isset($_GET["roomid"])){
 	$room_id = htmlentities($_GET["auth_id"]);
 	room_detail();
@@ -9,8 +14,6 @@ if(isset($_GET["roomid"])){
 	room_table();
 }
 function room_table(){
-	include('db_login.php');
-	include('utils.php');
 	$mysqli = db_connect();
 	$query = 'SELECT rooms.room_name,rooms.ip_address,rooms.room_id FROM rooms';
 	if($result = $mysqli->query($query)){
@@ -56,4 +59,5 @@ function room_table(){
 		echo 'a';
 	}
 }
+include('resources/foot.php');
 ?>

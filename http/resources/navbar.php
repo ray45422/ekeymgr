@@ -1,11 +1,11 @@
 <?php
 $pages = array(
-	'index.html' => 'Home',
-	'users.html' => 'Users',
-	'keys.html' => 'Keys',
-	'logs.html' => 'Logs',
-	'services.html' => 'Services',
-	'rooms.html' => 'Rooms');
+	'index.php' => 'Home',
+	'users.php' => 'Users',
+	'keys.php' => 'Keys',
+	'logs.php' => 'Logs',
+	'services.php' => 'Services',
+	'rooms.php' => 'Rooms');
 ?>
 <nav class="navbar navbar-default navbar-static-top">
 	<div class="container">

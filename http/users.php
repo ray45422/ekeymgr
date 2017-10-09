@@ -1,7 +1,12 @@
 <?php
-if(basename($_SERVER['PHP_SELF']) !== 'users.html'){
+if(basename($_SERVER['PHP_SELF']) !== 'users.php'){
 	die();
 }
+include('php/login.php');
+$title = 'ユーザー管理';
+include('resources/head.php');
+include_once('php/db_login.php');
+include_once('php/utils.php');
 if(isset($_GET["userid"])){
 	if(isset($_GET["edit"])){
 		echo $_GET["edit"];
@@ -12,11 +17,9 @@ if(isset($_GET["userid"])){
 	user_table();
 }
 function user_detail($user_id){
-	include('db_login.php');
 	$mysqli = db_connect();
 	$query = 'SELECT * FROM users WHERE users.user_id=\''.$user_id.'\'';
 	if($result = $mysqli->query($query)){
-		include('utils.php');
 		$container = new Container();
 		$titles = ["id","名前","表示名"];
 		$table = new Table($titles);
@@ -67,7 +70,6 @@ function user_detail($user_id){
 	$container->close();
 }
 function user_table(){
-	include('db_login.php');
 	if(isset($_GET["page"])){
 		$page = htmlentities($_GET["page"]);
 	}else{
@@ -93,7 +95,6 @@ function user_table(){
 	}
 	$query = 'SELECT user_id,user_name,disp_name FROM users WHERE users.user_idn LIMIT '.$users_per_page.' OFFSET '.(($page-1) * $users_per_page);
 	if($result = $mysqli->query($query)){
-		include('utils.php');
 		$container = new Container();
 		$pagination = new Pagination("users.html",$page,$pages);
 		$titles = ["id","名前","表示名"];
@@ -106,4 +107,5 @@ function user_table(){
 		$container->close();
 	}
 }
+include('resources/foot.php');
 ?>
