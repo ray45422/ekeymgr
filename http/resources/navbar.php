@@ -7,6 +7,7 @@ $pages = array(
 	'services.php' => 'Services',
 	'rooms.php' => 'Rooms');
 ?>
+
 <nav class="navbar navbar-default navbar-static-top">
 	<div class="container">
 		<div class="navbar-header">
@@ -33,8 +34,10 @@ $pages = array(
 					echo $val;
 					echo '</a></li>';
 				}
+				echo PHP_EOL;
 				?>
 			</ul>
+			<ul class="nav navbar-nav navbar-right"><li><a href="./logout.php">Logout</a></li></p>
 		</div>
 	</div>
 </nav>

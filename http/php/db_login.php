@@ -1,6 +1,6 @@
 <?php
 function db_connect(){
-	$db_host='localhost';
+	$db_host='p:localhost';
 	$db_database='ekeymgr';
 	$db_username='ekeymgr';
 	$db_password='ekeymgr';

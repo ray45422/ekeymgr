@@ -8,6 +8,6 @@
 	<link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<?php include('resources/navbar.html');
+<?php include('resources/navbar.php');
 echo "<center><h1>$title<h1></center>";
 ?>
