@@ -8,36 +8,29 @@ $pages = array(
 	'rooms.php' => 'Rooms');
 ?>
 
-<nav class="navbar navbar-default navbar-static-top">
-	<div class="container">
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			</button>
-			<a class="navbar-brand" href="./index.html">ekeymgr panel</a>
-		</div>
-		<div id="navbar" class="navbar-collapse collapse">
-			<ul class="nav navbar-nav">
-				<?php
-				$path = $_SERVER['PHP_SELF'];
-				foreach($pages as $key => $val){
-					echo '<li';
-					if(strpos($path,$key) !== false){
-						echo ' class="active"';
-					}
-					echo '><a href="./';
-					echo $key;
-					echo '">';
-					echo $val;
-					echo '</a></li>';
+<nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+	<a class="navbar-brand" href="./index.php">ekeymgr panel</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+	<div id="navbarCollapse" class="collapse navbar-collapse">
+		<ul class="navbar-nav mr-auto">
+			<?php
+			$path = $_SERVER['PHP_SELF'];
+			foreach($pages as $key => $val){
+				echo '<li class="nav-item';
+				if(strpos($path,$key) !== false){
+					echo ' active';
 				}
-				echo PHP_EOL;
-				?>
-			</ul>
-			<ul class="nav navbar-nav navbar-right"><li><a href="./logout.php">Logout</a></li></p>
-		</div>
+				echo '"><a class="nav-link" href="./';
+				echo $key;
+				echo '">';
+				echo $val;
+				echo '</a></li>'.PHP_EOL;
+			}
+			echo PHP_EOL;
+			?>
+		</ul>
+		<ul class="navbar-nav navbar-right"><li class="nav-item"><a class="nav-link" href="./logout.php">Logout</a></li></p>
 	</div>
 </nav>
