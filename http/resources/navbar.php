@@ -8,7 +8,7 @@ $pages = array(
 	'rooms.php' => 'Rooms');
 ?>
 
-<nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
+<nav class="navbar navbar-toggleable-md fixed-top navbar-light bg-light">
 	<a class="navbar-brand" href="./index.php">ekeymgr panel</a>
 	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
 		<span class="navbar-toggler-icon"></span>
