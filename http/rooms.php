@@ -1,7 +1,12 @@
 <?php
-if(basename($_SERVER['PHP_SELF']) !== 'rooms.html'){
+if(basename($_SERVER['PHP_SELF']) !== 'rooms.php'){
 	die();
 }
+include('php/login.php');
+$title = '部屋管理';
+include('resources/head.php');
+include_once('php/db_login.php');
+include_once('php/utils.php');
 if(isset($_GET["roomid"])){
 	$room_id = htmlentities($_GET["auth_id"]);
 	room_detail();
@@ -9,15 +14,13 @@ if(isset($_GET["roomid"])){
 	room_table();
 }
 function room_table(){
-	include('db_login.php');
-	include('utils.php');
 	$mysqli = db_connect();
 	$query = 'SELECT rooms.room_name,rooms.ip_address,rooms.room_id FROM rooms';
 	if($result = $mysqli->query($query)){
 		$titles = ["部屋名","状態"];
-		$container = new Container();
 		$table = new Table($titles);
 		while($row = $result->fetch_array()){
+			$room_id = $row["room_id"];
 			$ip_address = $row["ip_address"];
 			socket_clear_error();
 			if($ip_address === "NULL"){
@@ -42,7 +45,7 @@ function room_table(){
 					socket_recv($socket, $msg, 255, MSG_WAITALL);
 					socket_close($socket);
 					if(substr($msg, 0, 1) === "0"){
-						$row[1] = substr($msg,9);
+						$row[1] = makelink(substr($msg,9), "/api/1.0/toggle.php", "room_id=$room_id");
 					}else{
 						$row[1] = "Error";
 					}
@@ -51,9 +54,9 @@ function room_table(){
 			}
 		}
 		$table->close();
-		$container->close();
 	}else{
 		echo 'a';
 	}
 }
+include('resources/foot.php');
 ?>

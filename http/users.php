@@ -1,7 +1,12 @@
 <?php
-if(basename($_SERVER['PHP_SELF']) !== 'users.html'){
+if(basename($_SERVER['PHP_SELF']) !== 'users.php'){
 	die();
 }
+include('php/login.php');
+$title = 'ユーザー管理';
+include('resources/head.php');
+include_once('php/db_login.php');
+include_once('php/utils.php');
 if(isset($_GET["userid"])){
 	if(isset($_GET["edit"])){
 		echo $_GET["edit"];
@@ -12,12 +17,25 @@ if(isset($_GET["userid"])){
 	user_table();
 }
 function user_detail($user_id){
-	include('db_login.php');
 	$mysqli = db_connect();
 	$query = 'SELECT * FROM users WHERE users.user_id=\''.$user_id.'\'';
 	if($result = $mysqli->query($query)){
-		include('utils.php');
-		$container = new Container();
+		?>
+		<style>
+		.buttons {
+			margin-bottom: 20px;
+			float: right;
+		}
+		</style>
+		<div class="buttons">
+			<?php
+			if($user_id === $_SERVER['PHP_AUTH_USER']){?>
+			<a href="./passwd.php?userid=<?php echo $user_id; ?>" class="btn btn-primary">パスワード変更</a>
+			<?php } ?>
+			<a href="./keyadd.php?userid=<?php echo $user_id; ?>" class="btn btn-primary">新規鍵登録</a>
+			<a href="./userdel.php?userid=<?php echo $user_id;?>" class="btn btn-danger">ユーザー削除</a>
+		</div>
+		<?php
 		$titles = ["id","名前","表示名"];
 		$table = new Table($titles);
 		while($row = $result->fetch_row()){
@@ -32,13 +50,13 @@ function user_detail($user_id){
 		$titles = ["#","認証方法","状態"];
 		$table = new Table($titles);
 		while($row = $result->fetch_array()){
-			$row[0] = makelink("#".$row[0], "keys.html", "authid=".$row[0]);
+			$row[0] = makelink("#".$row[0], "keys.php", "authid=".$row[0]);
 			if($row[2] === '0'){
 				$row[2] = "無効";
 			}else if($row[2] === '1'){
 				$row[2] = "有効";
 			}
-			$row[2] = makelink($row[2], "keys.html", "authid=".$row["auth_id"], "valid=".(1-$row["valid_flag"]));
+			$row[2] = makelink($row[2], "keys.php", "authid=".$row["auth_id"], "valid=".(1-$row["valid_flag"]));
 			$table->add($row);
 		}
 		$table->close();
@@ -52,7 +70,7 @@ function user_detail($user_id){
 		$panel->setHeader('<strong>直近の利用</strong>');
 		$table = new Table($titles);
 		while($row = $result->fetch_array()){
-			$row[1] = makelink("#".$row[1], "keys.html", "authid=".$row[1]);
+			$row[1] = makelink("#".$row[1], "keys.php", "authid=".$row[1]);
 			if($row[2] == 0){
 				$row[2] = "open";
 			}else{
@@ -64,10 +82,8 @@ function user_detail($user_id){
 	}else{
 		echo 'a';
 	}
-	$container->close();
 }
 function user_table(){
-	include('db_login.php');
 	if(isset($_GET["page"])){
 		$page = htmlentities($_GET["page"]);
 	}else{
@@ -93,17 +109,16 @@ function user_table(){
 	}
 	$query = 'SELECT user_id,user_name,disp_name FROM users WHERE users.user_idn LIMIT '.$users_per_page.' OFFSET '.(($page-1) * $users_per_page);
 	if($result = $mysqli->query($query)){
-		include('utils.php');
-		$container = new Container();
-		$pagination = new Pagination("users.html",$page,$pages);
+		echo '<div align="right"><a class="btn btn-primary" href="./useradd.php">新規ユーザー登録</a></div>';
+		$pagination = new Pagination("users.php",$page,$pages);
 		$titles = ["id","名前","表示名"];
 		$table = new Table($titles);
 		while($row = $result->fetch_row()){
-			$row[0] = makelink($row[0], "users.html", "userid=".$row[0]);
+			$row[0] = makelink($row[0], "users.php", "userid=".$row[0]);
 			$table->add($row);
 		}
 		$table->close();
-		$container->close();
 	}
 }
+include('resources/foot.php');
 ?>

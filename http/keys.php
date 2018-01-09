@@ -1,7 +1,12 @@
 <?php
-if(basename($_SERVER['PHP_SELF']) !== 'keys.html'){
+if(basename($_SERVER['PHP_SELF']) !== 'keys.php'){
 	die();
 }
+include('php/login.php');
+$title = "認証情報管理";
+include('resources/head.php');
+include_once('php/db_login.php');
+include_once('php/utils.php');
 if(isset($_GET["authid"])){
 	$auth_id = htmlentities($_GET["authid"]);
 	if(isset($_GET["valid"])){
@@ -14,22 +19,19 @@ if(isset($_GET["authid"])){
 	key_table();
 }
 function key_detail($auth_id){
-	include('db_login.php');
-	include('utils.php');
 	$mysqli = db_connect();
 	$query = 'SELECT auth_id,user_id,service_name,valid_flag FROM authdata,services WHERE services.service_id=authdata.service_id AND authdata.auth_id='.$auth_id;
 	if($result = $mysqli->query($query)){
 		$titles = ["#","所有者","認証方法","状態"];
-		$container = new Container();
 		$table = new Table($titles);
 		$row = $result->fetch_array();
-		$row[1] = makelink($row[1], "users.html", "userid=".$row[1]);
+		$row[1] = makelink($row[1], "users.php", "userid=".$row[1]);
 		if($row[3] == 0){
 			$row[3] = "無効";
 		}else{
 			$row[3] = "有効";
 		}
-		$row[3] = makelink($row[3], "keys.html", "authid=".$row["auth_id"], "valid=".(1-$row["valid_flag"]));
+		$row[3] = makelink($row[3], "keys.php", "authid=".$row["auth_id"], "valid=".(1-$row["valid_flag"]));
 		$table->add($row);
 		$table->close();
 	}else{
@@ -42,10 +44,14 @@ function key_detail($auth_id){
 			$panel = new Panel();
 			$panel->setHeader('<strong>有効期限</strong>');
 			$list = new ListGroup();
-			$link = makelink($row[0],"valtime.html","edit","timeid=".$row[1]);
+			$link = makelink($row[0],"valtime.php","edit","timeid=".$row[1]);
 			$list->add($link);
 			$list->close();
 			$panel->close();
+		}else{
+			?>
+			<p>有効期限は設定されていません</p>
+			<?php
 		}
 	}
 	$query = 'SELECT days,start_time,end_time,auth_timestamp_scheduled.timestamp_scheduled_id FROM auth_timestamp_scheduled LEFT JOIN validated_timestamp_scheduled ON (auth_timestamp_scheduled.timestamp_scheduled_id=validated_timestamp_scheduled.timestamp_scheduled_id) WHERE auth_timestamp_scheduled.auth_id='.$auth_id;
@@ -53,30 +59,32 @@ function key_detail($auth_id){
 		if($result->num_rows <> 0){
 			echo '<br>';
 			$panel = new Panel();
-			$panel->setHeader('<strong>有効期間</strong>');
-			$titles = ["","日","月","火","水","木","金","土","開始時間","終了時間"];
+			$panel->setHeader('<strong>利用制限</strong>');
+			$titles = ["日","月","火","水","木","金","土","開始時間","終了時間"];
 			$table = new Table($titles);
 			while($row = $result->fetch_row()){
 				$list = array("");
 				$list = array_pad($list,10,"");
 				if(count($row) <> 0){
-					$list[0] = makelink("編集","valtimesch.html","edit","timeschid=".$row[3]);
+					//$list[0] = makelink("編集","valtimesch.php","edit","timeschid=".$row[3]);
 					for ($i=0; $i<strlen($row[0]); $i++) {
-						$list[$row[0][$i]] = "x";
+						$list[$row[0][$i]-1] = "x";
 					}
-					$list[8] = $row[1];
-					$list[9] = $row[2];
+					$list[7] = $row[1];
+					$list[8] = $row[2];
 				}
 				$table->add($list);
 			}
 			$table->close();
 			$panel->close();
+		}else{
+			?>
+			<p>利用日時の制限はありません</p>
+			<?php
 		}
 	}
-	$container->close();
 }
 function key_table(){
-	include('db_login.php');
 	if(isset($_GET["page"])){
 		$page = htmlentities($_GET["page"]);
 	}else{
@@ -102,31 +110,27 @@ function key_table(){
 	}
 	$query = 'SELECT auth_id,user_id,service_name,valid_flag FROM authdata,services WHERE services.service_id=authdata.service_id AND authdata.auth_id LIMIT '.$keys_per_page.' OFFSET '.(($page-1) * $keys_per_page);
 	if($result = $mysqli->query($query)){
-		include('utils.php');
 		$titles = ["#","所有者","認証方法","状態"];
-		$container = new Container();
-		$pagination = new Pagination("keys.html",$page,$pages);
+		$pagination = new Pagination("keys.php",$page,$pages);
 		$table = new Table($titles);
 		while($row = $result->fetch_array()){
-			$row[0] = makelink("#".$row[0], "keys.html", "authid=".$row[0]);
-			$row[1] = makelink($row[1], "users.html", "userid=".$row[1]);
+			$row[0] = makelink("#".$row[0], "keys.php", "authid=".$row[0]);
+			$row[1] = makelink($row[1], "users.php", "userid=".$row[1]);
 			if($row[3] == 0){
 				$row[3] = "無効";
 			}else{
 				$row[3] = "有効";
 			}
-			$row[3] = makelink($row[3], "keys.html", "authid=".$row["auth_id"], "valid=".(1-$row["valid_flag"]));
+			$row[3] = makelink($row[3], "keys.php", "authid=".$row["auth_id"], "valid=".(1-$row["valid_flag"]));
 			$table->add($row);
 		}
 		$table->close();
-		$pagination = new Pagination("keys.html",$page,$pages);
-		$container->close();
+		$pagination = new Pagination("keys.php",$page,$pages);
 	}
 }
 function set_key_valid($auth_id, $status){
-	include('db_login.php');
 	if(!isset($address)){
-		$address = "./keys.html";
+		$address = "./keys.php";
 	}
 	$mysqli = db_connect();
 	$middle = '';
@@ -142,4 +146,5 @@ function set_key_valid($auth_id, $status){
 		header('Location:'.$_SERVER['HTTP_REFERER']);
 	}
 }
+include('resources/foot.php');
 ?>

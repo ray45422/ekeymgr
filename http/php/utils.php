@@ -104,6 +104,8 @@ class ListGroup{
 	}
 }
 class Pagination{
+	var $start;
+	var $end;
 	var $address;
 	var $page;
 	var $pages;
@@ -111,77 +113,86 @@ class Pagination{
 	var $hlinks = 4;
 	var $isClose = false;
 	function Pagination($address, $page, $pages){
-		$this->address = $address;
-		$this->page = $page;
-		$this->pages = $pages;
-		echo '<nav>';
-		echo '<ul class="pagination">';
-		echo '<li>'.makelink("1", $address, "page=1");
-		echo '<li';
-		if($page == 1){
-			echo ' class="disabled">';
-			echo '<span aria-hidden="true">«</span>';
-		}else{
-			echo '>';
-			echo makelink("«", $address, "page=".($page-1));
-		}
-		echo '</li>';
-		$this->pagegen();
-		echo '<li';
-		if($page == $pages){
-			echo ' class="disabled">';
-			echo '<span aria-hidden="true">»</span>';
-		}else{
-			echo '>';
-			echo makelink("»", $address, "page=".($page+1));
-		}
-		echo '</li>';
-		echo '<li>'.makelink($pages, $address, "page=".$pages);
-		$this->close();
-	}
-	function pagegen(){
-		$start = $this->page - $this->hlinks + 1;
+		$start = $page - $this->hlinks + 1;
 		$end = $start + $this->links-1;
 		if($start < 1){
 			$diff = 1 - $start;
 			$start = 1;
 			$end += $diff;
 		}
-		if($end > $this->pages){
-			$diff = $this->pages - $end;
-			$end = $this->pages;
+		if($end > $pages){
+			$diff = $pages - $end;
+			$end = $pages;
 			$start += $diff;
 		}
 		if($start < 1){
 			$start = 1;
 		}
-		for($i = $start; $i <= $end; $i++){
-			echo '<li';
-			if($i == $this->page){
-				echo ' class="active"';
-			}
-			echo '>';
-			echo makelink($i, $this->address, "page=".$i);
-			echo '</li>';
+		$this->start = $start;
+		$this->end = $end;
+		$this->address = $address;
+		$this->page = $page;
+		$this->pages = $pages;
+		$this->pagegen();
+	}
+	
+	function pageLink($title, $page, $active = false, $disable = false){
+		echo maketag('li', makeAttribute('class', 'page-item', $active?'active':'', $disable?'disabled':''));
+		if($page == '' || $disable){
+			echo maketag('span', makeAttribute('class', 'page-link'));
+			echo $title;
+			echo '</span>';
+		}else{
+			echo maketag('a', makeAttribute('class', 'page-link'), makeAttribute('href', "$this->address?page=$page"));
+			echo $title;
+			echo '</a>';
 		}
+		echo '</li>';
+	}
+	function pagegen(){
+		$start = $this->start;
+		$end = $this->end;
+		$page = $this->page;
+		$pages = $this->pages;
+		echo '<nav>';
+		echo '<ul class="pagination">';
+		$this->pageLink('1', 1);
+		$this->pageLink('«', $page - 1, false, $page == 1);
+		for($i = $start; $i <= $end; $i++){
+			$this->pageLink($i, $i, $page === $i);
+		}
+		$this->pageLink('»', $page + 1, false, $page == $pages);
+		$this->pageLink($pages, $pages);
+		$this->close();
 	}
 	function close(){
 		echo '</ul>';
 		echo '</nav>';
 	}
 }
+function makeAttribute($attributeName, ...$values){
+	return $attributeName . '="' . implode(' ', $values) . '"';
+}
+function maketag($tagName, ...$attributes){
+	$result = "<$tagName";
+	foreach($attributes as $value){
+		$result .=  ' ' . $value;
+	}
+	$result .= '>';
+	return $result;
+}
 function makelink($title, $address, ...$params){
 	$parameter = concat_params($params);
-	return '<a href="'.$address.$parameter.'">'.$title.'</a>';
+	$href = 'href="' . $address . $parameter . '"';
+	return maketag("a", $href) . $title . '</a>';
 }
 function concat_params($params){
-	$parameter = '';
-	if(count($params) !== 0){
-		$parameter = '?'.$params[0];
-		for ($i=1; $i < count($params); $i++) {
-			$parameter .= '&'.$params[$i];
-		}
-		return $parameter;
+	return '?' . implode('&', $params);
+}
+function hashGenerate($data){
+	for($i = 0; $i < 3; $i++){
+		$data = strtoupper(hash('sha256', $data));
 	}
+	return $data.'V1';
 }
 ?>
