@@ -5,10 +5,10 @@
 		"ray45422"
 	],
 	"dependencies": {
-		"rcs620s": { "path":  "RCS620S"},
-		"servo": {"path": "servo"},
+		"rcs620s-d": { "path":  "rcs620s-d"},
+		"servo-d": {"path": "servo-d"},
 		"mysql-d": "~>0.3.3",
-		"variantconfig": "~master",
+		"variantconfig": "~master"
 	},
 	"description": "test",
 	"copyright": "Copyright © 2016, ray45422",
