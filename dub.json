@@ -1,6 +1,6 @@
 {
 	"name": "ekeymgr",
-	"Type":"executable",
+	"Type":"automatic",
 	"authors": [
 		"ray45422"
 	],
