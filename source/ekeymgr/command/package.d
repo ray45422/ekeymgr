@@ -14,7 +14,7 @@ void addSubCommand(string name, SubCommand command){
 private int execSubCommand(string name, string[] args){
 	if(!subCommands.keys.canFind(name)){
 		import client = ekeymgr.client;
-		return client.connect(args);
+		return client.connect(name, args);
 	}
 	return subCommands[name](args);
 }

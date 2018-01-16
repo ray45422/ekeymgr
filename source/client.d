@@ -3,7 +3,7 @@ static import config = ekeymgr.config;
 import std.stdio;
 import std.string;
 
-int connect(string[] args){
+int connect(string command, string[] args){
 	import std.socket;
 	import core.time;
 	import std.array;
@@ -19,8 +19,8 @@ int connect(string[] args){
 		return 1;
 	}
 	scope(exit) socket.close;
-	string str = args[1];
-	for(int i = 2; i < args.length; ++i){
+	string str = command;
+	for(int i = 1; i < args.length; ++i){
 		str = str ~ " " ~ args[i];
 	}
 	socket.send(str);
