@@ -1,4 +1,4 @@
-module ekeymgr.lockmanager;
+module nfctag.lockmanager;
 import servo;
 import dgpio;
 class LockManager{

@@ -1,0 +1,14 @@
+{
+	"name": "nfctag",
+	"authors": [
+		"ray45422"
+	],
+	"dependencies": {
+		"ekeymgr": {"path": "../../"},
+		"rcs620s-d": {"path": "rcs620s-d"},
+		"servo-d": {"path": "servo-d"}
+	},
+	"description": "ekeymgr NFC authentication demo.",
+	"copyright": "Copyright © 2018, ray45422",
+	"license": "MIT"
+}

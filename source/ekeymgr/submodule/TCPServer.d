@@ -1,6 +1,6 @@
-module ekeymgr.systemdaemon;
+module ekeymgr.submodule.TCPServer;
 static import config = ekeymgr.config;
-import ekeymgr.userdaemon;
+import ekeymgr.submodule;
 import ekeymgr.auth;
 import std.stdio;
 import std.socket;
@@ -8,27 +8,19 @@ import std.file;
 import std.string;
 import std.array;
 import std.getopt;
-import core.thread;
 import core.stdc.stdlib;
-class SystemDaemon{
+class TCPServer:Submodule{
 public:
 	this(){
 		address = new InternetAddress(config.ekeymgrServerPort);
 		socket = new TcpSocket(AddressFamily.INET);
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, true);
 		socket.bind(address);
-		try{
-			userdaemon = new UserDaemon();
-		}catch(Exception e){
-			stderr.writeln(e.msg);
-			exit(EXIT_FAILURE);
-		}
 	}
 	~this(){
 		stop();
 	}
 	void main(){
-		Thread t = new Thread(&userdaemon.main).start;
 		socket.listen(1);
 		("listening on " ~ address.toString).writeln;
 		stdout.flush;
@@ -72,14 +64,18 @@ public:
 			}
 			p.send(msg ~ result.msg);
 		}
-		t.join;
+	}
+	void stop(){
+		running = false;
+	}
+	bool isAutoRestart(){
+		return true;
 	}
 private:
 	bool serviceIdAuthFlag = false;
 	Address address;
 	Socket socket;
 	bool running = true;
-	UserDaemon userdaemon;
 	Auth _auth;
 	string format(char[] buf){
 		for(int i = 0; i < buf.length; ++i){
@@ -102,22 +98,23 @@ private:
 				if(args.length < 4 && !auth(args)){
 					return new ExecResult(false,"Authentication failure");
 				}
-				f = &userdaemon.open;
+				//f = &userdaemon.open;
 				break;
 			case "close":
 				if(args.length < 4 && !auth(args)){
 					return new ExecResult(false,"Authentication failure");
 				}
-				f = &userdaemon.close;
+				//f = &userdaemon.close;
 				break;
 			case "toggle":
 				if(args.length < 4 && !auth(args)){
 					return new ExecResult(false,"Authentication failure");
 				}
-				f = &userdaemon.toggle;
+				//f = &userdaemon.toggle;
 				break;
 			case "status":
-				string msg = "status:" ~ (userdaemon.isLock?"Lock":"Open");
+				//string msg = "status:" ~ (userdaemon.isLock?"Lock":"Open");
+				string msg = "";
 				return new ExecResult(true, msg);
 			case "stop":
 				"stopping daemon...".writeln;
@@ -130,17 +127,13 @@ private:
 		if(f is null){
 			return new ExecResult(false, "Unknown operation " ~ args[0]);
 		}else{
-			Thread t = new Thread(f);
-			t.start().join;
+			//Thread t = new Thread(f);
+			//t.start().join;
 			if(!(_auth is null)){
-				_auth.addLog(userdaemon.isLock);
+				//_auth.addLog(userdaemon.isLock);
 			}
 			return new ExecResult(true, "");
 		}
-	}
-	void stop(){
-		running = false;
-		userdaemon.stop;
 	}
 	bool auth(string[] args){
 		_auth = new Auth();

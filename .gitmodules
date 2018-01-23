@@ -1,6 +1,6 @@
-[submodule "rcs620s-d"]
-	path = rcs620s-d
-	url = https://github.com/ray45422/rcs620s-d.git
-[submodule "servo-d"]
-	path = servo-d
+[submodule "example/nfctag/servo-d"]
+	path = example/nfctag/servo-d
 	url = https://github.com/ray45422/servo-d.git
+[submodule "example/nfctag/rcs620s-d"]
+	path = example/nfctag/rcs620s-d
+	url = https://github.com/ray45422/rcs620s-d.git

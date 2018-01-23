@@ -1,0 +1,14 @@
+.dub
+docs.json
+__dummy.html
+docs/
+nfctag.so
+nfctag.dylib
+nfctag.dll
+nfctag.a
+nfctag.lib
+nfctag-test-*
+*.exe
+*.o
+*.obj
+*.lst

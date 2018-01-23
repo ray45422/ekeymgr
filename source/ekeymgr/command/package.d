@@ -34,13 +34,12 @@ void addPresetSubCommand(){
 		return 0;
 	});
 	addSubCommand("daemon", (string[] args){
-		import ekeymgr.systemdaemon;
+		import ekeymgr = ekeymgr;
 		import config = ekeymgr.config;
-		SystemDaemon systemdaemon = new SystemDaemon();
 		if(!config.setRoomIPAddress(false)){
 			return false;
 		}
-		systemdaemon.main();
+		ekeymgr.start();
 		config.setRoomIPAddress(true);
 		return 0;
 	});

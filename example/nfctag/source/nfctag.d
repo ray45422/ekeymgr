@@ -1,15 +1,16 @@
-module ekeymgr.userdaemon;
+module nfctag.nfctag;
+import ekeymgr.submodule;
 import std.stdio;
 import std.string;
 import std.variant;
 import core.thread;
 import serial.device;
 import serial.rcs620s;
-import ekeymgr.lockmanager;
+import nfctag.lockmanager;
 import dgpio;
 static import config = ekeymgr.config;
 
-class UserDaemon{
+class NFCTagModule: Submodule{
 public:
 	this(){
 		sw = new GPIO(2);
@@ -37,6 +38,9 @@ public:
 		while(running){
 			loop();
 		}
+	}
+	bool isAutoRestart(){
+		return true;
 	}
 	void open(){
 		lockMan.open();
