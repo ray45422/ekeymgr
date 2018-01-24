@@ -5,6 +5,7 @@ import std.array;
 import std.algorithm.iteration: filter;
 import std.algorithm.comparison: equal;
 import std.algorithm.searching: canFind;
+import ekeymgr.locker;
 
 alias SubCommand = int delegate(string[] args);
 private SubCommand[string] subCommands;

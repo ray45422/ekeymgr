@@ -1,7 +1,36 @@
 module ekeymgr.ekeymgr;
 import core.thread;
-import ekeymgr.submodule;
+public import ekeymgr.submodule;
+public import locker = ekeymgr.locker.lockManager;
+public import config = ekeymgr.config;
 
+void start(){
+	config.init();
+	startSubmodule();
+	isRunning = true;
+	while(isRunning){
+		submoduleCheckRestart();
+		Thread.sleep(dur!"seconds"(1));
+	}
+	stopSubmodule();
+}
+void stop(){
+	isRunning = false;
+}
+
+bool open(){
+	return locker.open();
+}
+bool close(){
+	return locker.close();
+}
+bool toggle(){
+	return locker.open();
+}
+
+void submoduleAdd(Submodule submodule){
+	submodules ~= new SubmoduleThread(submodule);
+}
 private class SubmoduleThread: Thread{
 	Submodule submodule;
 	this(Submodule submodule){
@@ -19,21 +48,6 @@ private class SubmoduleThread: Thread{
 }
 private SubmoduleThread[] submodules;
 private bool isRunning;
-void start(){
-	startSubmodule();
-	isRunning = true;
-	while(isRunning){
-		submoduleCheckRestart();
-		Thread.sleep(dur!"seconds"(1));
-	}
-	stopSubmodule();
-}
-void stop(){
-	isRunning = false;
-}
-void submoduleAdd(Submodule submodule){
-	submodules[] = new SubmoduleThread(submodule);
-}
 private void startSubmodule(){
 	foreach(SubmoduleThread s; submodules){
 		s.start();

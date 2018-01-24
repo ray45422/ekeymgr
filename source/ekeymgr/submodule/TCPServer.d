@@ -1,5 +1,5 @@
 module ekeymgr.submodule.TCPServer;
-static import config = ekeymgr.config;
+import config = ekeymgr.config;
 import ekeymgr.submodule;
 import ekeymgr.net.auth;
 import std.stdio;
@@ -9,6 +9,7 @@ import std.string;
 import std.array;
 import std.getopt;
 import core.stdc.stdlib;
+import core.thread;
 class TCPServer:Submodule{
 public:
 	this(){
@@ -26,43 +27,8 @@ public:
 		stdout.flush;
 		scope(exit) socket.close();
 		while(running){
-			serviceIdAuthFlag = false;
 			auto p = socket.accept;
-			scope(exit) p.close();
-			auto buf = new char[255];
-			p.receive(buf);
-			format(buf).writeln;
-			stdout.flush;
-			string[] args = format(buf).split;
-			if(args.length == 0){
-				continue;
-			}
-			try{
-				getopt(args, "service-id-auth", &serviceIdAuthFlag);
-			}catch(Exception e){
-			}
-			ExecResult result;
-			auto remoteAddress = p.remoteAddress.toAddrString;
-			if(remoteAddress == p.localAddress.toHostNameString || remoteAddress == "127.0.0.1"){
-				result = exec(args);
-			}else{
-				if(args[0] == "stop"){
-					result = new ExecResult(false, "Not allow to stop from outside.");
-				}else if(remoteAddress == config.mySQLServerAddress || args[0] == "status"){
-					result = exec(args);
-				}else if(args.length != 3){
-					result = new ExecResult(false, "Authentication required.");
-				}else{
-					result = exec(args);
-				}
-			}
-			string msg = "";
-			if(result.isSuccess){
-				msg = "0\n";
-			}else{
-				msg = "1\n";
-			}
-			p.send(msg ~ result.msg);
+			new Session(p).start();
 		}
 	}
 	void stop(){
@@ -72,10 +38,60 @@ public:
 		return true;
 	}
 private:
-	bool serviceIdAuthFlag = false;
 	Address address;
 	Socket socket;
 	bool running = true;
+}
+class Session: Thread{
+public:
+	this(Socket socket){
+		this.socket = socket;
+		super(&receive);
+	}
+private:
+	Socket socket;
+	string remoteAddress;
+	string localAddress;
+	bool serviceIdAuthFlag = false;
+	void receive(){
+		serviceIdAuthFlag = false;
+		auto buf = new char[255];
+		socket.receive(buf);
+		format(buf).writeln;
+		stdout.flush;
+		string[] args = format(buf).split;
+		remoteAddress = socket.remoteAddress.toHostNameString;
+		localAddress = socket.localAddress.toHostNameString;
+		parse(args);
+		socket.close();
+	}
+	string parse(string[] args){
+		try{
+			getopt(args, "service-id-auth", &serviceIdAuthFlag);
+		}catch(Exception e){
+		}
+		ExecResult result;
+		if(remoteAddress == localAddress || remoteAddress == "127.0.0.1"){
+			result = exec(args);
+		}else{
+			if(args[0] == "stop"){
+				result = new ExecResult(false, "Not allow to stop from outside.");
+			}else if(remoteAddress == config.mySQLServerAddress || args[0] == "status"){
+				result = exec(args);
+			}else if(args.length != 3){
+				result = new ExecResult(false, "Authentication required.");
+			}else{
+				result = exec(args);
+			}
+		}
+		string msg = "";
+		if(result.isSuccess){
+			msg = "0\n";
+		}else{
+			msg = "1\n";
+		}
+		return msg ~ result.msg;
+	}
 	Auth _auth;
 	string format(char[] buf){
 		for(int i = 0; i < buf.length; ++i){
@@ -91,26 +107,24 @@ private:
 		if(args.length == 0){
 			return new ExecResult(false, "Too few arguments;");
 		}
-		auto f = &stop;
-		f = null;
 		switch(args[0]){
 			case "open":
 				if(args.length < 4 && !auth(args)){
 					return new ExecResult(false,"Authentication failure");
 				}
-				//f = &userdaemon.open;
+				ekeymgr.open();
 				break;
 			case "close":
 				if(args.length < 4 && !auth(args)){
 					return new ExecResult(false,"Authentication failure");
 				}
-				//f = &userdaemon.close;
+				ekeymgr.close();
 				break;
 			case "toggle":
 				if(args.length < 4 && !auth(args)){
 					return new ExecResult(false,"Authentication failure");
 				}
-				//f = &userdaemon.toggle;
+				ekeymgr.toggle();
 				break;
 			case "status":
 				//string msg = "status:" ~ (userdaemon.isLock?"Lock":"Open");
@@ -119,21 +133,12 @@ private:
 			case "stop":
 				"stopping daemon...".writeln;
 				stdout.flush();
-				stop();
+				ekeymgr.stop();
 				return new ExecResult(true, "stopping daemon...");
 			default:
-				break;
+				return new ExecResult(false, "Unknown operation " ~ args[0]);
 		}
-		if(f is null){
-			return new ExecResult(false, "Unknown operation " ~ args[0]);
-		}else{
-			//Thread t = new Thread(f);
-			//t.start().join;
-			if(!(_auth is null)){
-				//_auth.addLog(userdaemon.isLock);
-			}
-			return new ExecResult(true, "");
-		}
+		return new ExecResult(true, "");
 	}
 	bool auth(string[] args){
 		_auth = new Auth();
