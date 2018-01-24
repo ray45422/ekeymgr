@@ -13,7 +13,7 @@ void addSubCommand(string name, SubCommand command){
 }
 private int execSubCommand(string name, string[] args){
 	if(!subCommands.keys.canFind(name)){
-		import client = ekeymgr.client;
+		import client = ekeymgr.net.client;
 		return client.connect(name, args);
 	}
 	return subCommands[name](args);
@@ -52,7 +52,7 @@ void addPresetSubCommand(){
 			stdout.flush;
 			return 1;
 		}
-		import ekeymgr.auth;
+		import ekeymgr.net.auth;
 		Auth auth = new Auth();
 		if(isServiceIdAuth){
 			auto service = args[1];

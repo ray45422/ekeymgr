@@ -1,7 +1,7 @@
 module ekeymgr.submodule.TCPServer;
 static import config = ekeymgr.config;
 import ekeymgr.submodule;
-import ekeymgr.auth;
+import ekeymgr.net.auth;
 import std.stdio;
 import std.socket;
 import std.file;

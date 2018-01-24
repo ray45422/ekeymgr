@@ -90,7 +90,7 @@ private:
 			lockMan.stop;
 			return;
 		}
-		import ekeymgr.auth;
+		import ekeymgr.net.auth;
 		Auth auth = new Auth();
 		int ret = auth.authServiceId("FeliCa",arrayHex(rcs620s.idm));
 		if(ret == 0){

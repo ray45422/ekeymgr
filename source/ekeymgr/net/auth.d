@@ -1,4 +1,4 @@
-module ekeymgr.auth;
+module ekeymgr.net.auth;
 static import config = ekeymgr.config;
 import std.stdio;
 import std.datetime;

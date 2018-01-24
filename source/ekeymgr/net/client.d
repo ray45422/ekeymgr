@@ -1,4 +1,4 @@
-module ekeymgr.client;
+module ekeymgr.net.client;
 static import config = ekeymgr.config;
 import std.stdio;
 import std.string;
