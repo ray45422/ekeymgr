@@ -3,9 +3,8 @@ import std.stdio;
 import std.conv;
 import std.file:exists;
 import mysql.d;
-import variantconfig;
+import properd;
 
-private VariantConfig configs;
 immutable string configFile = "/etc/ekeymgr/ekeymgr.conf";
 shared string mySQLServerAddress;
 shared uint mySQLServerPort;
@@ -16,21 +15,22 @@ shared string ekeymgrServerAddress;
 shared ushort ekeymgrServerPort;
 shared uint room_id;
 shared string room_name = "";
+private string[string] configs;
 
 bool init(){
-	auto a = cast(int)cast(ushort)1756;
 	if(!exists(configFile)){
 		stderr.writeln("Config file does not exist");
 	}
-	configs.loadFile(configFile);
-	mySQLServerAddress = load("mySQLServerAddress", "127.0.0.1");
-	mySQLServerPort = load("mySQLServerPort", 3306);
-	mySQLServerUserName = load("mySQLServerUserName", "ekeymgr");
-	mySQLServerPassword = load("mySQLServerPassword", "ekeymgr");
-	mySQLServerDatabase = load("mySQLServerDatabase", "ekeymgr");
-	ekeymgrServerAddress = load("ekeymgrServerAddress", "localhost");
-	ekeymgrServerPort = load("ekeymgrServerPort", "1756").to!ushort;
-	room_id = load("room_id", 1);
+	static string[string] conf;
+	configs = readProperties(configFile);
+	mySQLServerAddress = configs.as!string("mySQLServerAddress", "127.0.0.1");
+	mySQLServerPort = configs.as!uint("mySQLServerPort", 3306);
+	mySQLServerUserName = configs.as!string("mySQLServerUserName", "ekeymgr");
+	mySQLServerPassword = configs.as!string("mySQLServerPassword", "ekeymgr");
+	mySQLServerDatabase = configs.as!string("mySQLServerDatabase", "ekeymgr");
+	ekeymgrServerAddress = configs.as!string("ekeymgrServerAddress", "localhost");
+	ekeymgrServerPort = configs.as!ushort("ekeymgrServerPort", 1756);
+	room_id = configs.as!uint("room_id", 1);
 	if(!getRoomName()){
 		return false;
 	}
@@ -38,8 +38,7 @@ bool init(){
 }
 
 T load(T = string)(string key, const T defaultValue = T.init){
-	configs.loadFile(configFile);
-	return configs.get(key, defaultValue).coerce!T;
+	return configs.as!T(key, defaultValue);
 }
 
 string room_id_str(){

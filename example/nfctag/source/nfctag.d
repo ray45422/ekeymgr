@@ -17,7 +17,7 @@ public:
 		sw.setInput();
 		buz = new GPIO(22);
 		buz.setOutput();
-		roomName = config.room_name;
+		roomName = config.load("roomName");
 		openMsg = config.load("openMsg", "Welcome!!");
 		closeMsg = config.load("closeMsg", "See you...");
 		failMsg = config.load("failMsg", "Auth Failed");

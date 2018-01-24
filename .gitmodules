@@ -4,3 +4,6 @@
 [submodule "example/nfctag/rcs620s-d"]
 	path = example/nfctag/rcs620s-d
 	url = https://github.com/ray45422/rcs620s-d.git
+[submodule "proper-d"]
+	path = proper-d
+	url = https://github.com/ray45422/proper-d.git
