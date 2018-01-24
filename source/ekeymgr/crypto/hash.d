@@ -1,16 +1,8 @@
-module ekeymgr.cipher;
+module ekeymgr.crypto.hash;
 import std.stdio;
 import std.digest.sha;
 import std.conv : hexString;
 
-class Encrypt{
-	string encrypt(){
-		return "";
-	}
-	string decrypt(){
-		return "";
-	}
-}
 
 class Hash{
 public:

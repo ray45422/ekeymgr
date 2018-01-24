@@ -135,7 +135,7 @@ private:
 		return 64;
 	}
 	bool idMatch(MysqlResult rows, string id){
-		import ekeymgr.cipher;
+		import ekeymgr.crypto;
 		auto hash = new Hash(id);
 		id = hash.generate;
 		foreach(MysqlRow row; rows){

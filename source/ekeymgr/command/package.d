@@ -65,8 +65,8 @@ void addPresetSubCommand(){
 		}
 	});
 	addSubCommand("hashGen", (string[] args){
-		static import cipher = ekeymgr.cipher;
-		return cipher.hashGen();
+		static import crypto = ekeymgr.crypto;
+		return crypto.hashGen();
 	});
 }
 int execCommand(string[] args){
