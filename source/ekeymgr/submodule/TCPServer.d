@@ -12,16 +12,14 @@ import core.stdc.stdlib;
 import core.thread;
 class TCPServer:Submodule{
 public:
-	this(){
-		address = new InternetAddress(config.ekeymgrServerPort);
-		socket = new TcpSocket(AddressFamily.INET);
-		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, true);
-		socket.bind(address);
-	}
 	~this(){
 		stop();
 	}
 	void main(){
+		address = new InternetAddress(config.load!ushort("ekeymgrServerPort"));
+		socket = new TcpSocket(AddressFamily.INET);
+		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, true);
+		socket.bind(address);
 		socket.listen(1);
 		("listening on " ~ address.toString).writeln;
 		stdout.flush;
@@ -76,7 +74,7 @@ private:
 		}else{
 			if(args[0] == "stop"){
 				result = new ExecResult(false, "Not allow to stop from outside.");
-			}else if(remoteAddress == config.mySQLServerAddress || args[0] == "status"){
+			}else if(remoteAddress == config.load("mySQLServerAddress") || args[0] == "status"){
 				result = exec(args);
 			}else if(args.length != 3){
 				result = new ExecResult(false, "Authentication required.");

@@ -7,7 +7,7 @@ int connect(string command, string[] args){
 	import std.socket;
 	import core.time;
 	import std.array;
-	auto address = new InternetAddress(config.ekeymgrServerAddress, config.ekeymgrServerPort);
+	auto address = new InternetAddress(config.load("ekeymgrServerAddress"), config.load!ushort("ekeymgrServerPort"));
 	auto socket = new TcpSocket(AddressFamily.INET);
 	socket.setOption(SocketOptionLevel.SOCKET, SocketOption.RCVTIMEO, dur!("seconds")(10));
 	socket.setOption(SocketOptionLevel.SOCKET, SocketOption.SNDTIMEO, dur!("seconds")(10));
