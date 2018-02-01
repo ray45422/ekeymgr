@@ -12,29 +12,8 @@ static import config = ekeymgr.config;
 
 class NFCTagModule: Submodule{
 public:
-	this(){
-		sw = new GPIO(2);
-		sw.setInput();
-		buz = new GPIO(22);
-		buz.setOutput();
-		roomName = config.load("roomName");
-		openMsg = config.load("openMsg", "Welcome!!");
-		closeMsg = config.load("closeMsg", "See you...");
-		failMsg = config.load("failMsg", "Auth Failed");
-		lockMan = new LockManager();
-		lcd = new SerialPort(config.load("lcdPath", "/dev/ttyUSB1"));
-		lcd.speed(BaudRate.BR_9600);
-		rcs620s = new RCS620S(config.load("rcs620sPath", "/dev/ttyUSB2"));
-		clearDisplay();
-		lcd.write("init");
-		while(!rcs620s.init()){
-			Thread.sleep(dur!("msecs")(1000));
-			lcd.write(".");
-		}
-		lockMan.open();
-		lockMan.init();
-	}
 	public void main(){
+		setup();
 		while(running){
 			loop();
 		}
@@ -66,10 +45,32 @@ private:
 	LockManager lockMan;
 	GPIO sw;
 	GPIO buz;
-	immutable string roomName;
+	string roomName;
 	string openMsg;
 	string closeMsg;
 	string failMsg;
+	void setup(){
+		sw = new GPIO(2);
+		sw.setInput();
+		buz = new GPIO(22);
+		buz.setOutput();
+		roomName = config.load("roomName");
+		openMsg = config.load("openMsg", "Welcome!!");
+		closeMsg = config.load("closeMsg", "See you...");
+		failMsg = config.load("failMsg", "Auth Failed");
+		lockMan = new LockManager();
+		lcd = new SerialPort(config.load("lcdPath", "/dev/ttyUSB1"));
+		lcd.speed(BaudRate.BR_9600);
+		rcs620s = new RCS620S(config.load("rcs620sPath", "/dev/ttyUSB2"));
+		clearDisplay();
+		lcd.write("init");
+		while(!rcs620s.init()){
+			Thread.sleep(dur!("msecs")(1000));
+			lcd.write(".");
+		}
+		lockMan.open();
+		lockMan.init();
+	}
 	private void loop(){
 		lcdUpdate();
 		"polling start".writeln;
