@@ -58,7 +58,6 @@ private:
 		serviceIdAuthFlag = false;
 		auto buf = new char[255];
 		socket.receive(buf);
-		format(buf).writeln;
 		stdout.flush;
 		string[] args = format(buf).split;
 		remoteAddress = socket.remoteAddress.toHostNameString;

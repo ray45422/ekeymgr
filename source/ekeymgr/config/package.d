@@ -85,7 +85,6 @@ bool setRoomIPAddress(bool isClose){
 	try{
 		mysql.connect(load("mySQLServerAddress"), load!ushort("mySQLServerPort"), load("mySQLServerUserName"), load("mySQLServerPassword"), load("mySQLServerDatabase"));
 		auto rows = mysql.query("UPDATE rooms SET ip_address='" ~ selfAddress ~ "' WHERE rooms.room_id=" ~ load("room_id"));
-		rows.writeln;
 		stdout.flush;
 	}catch(MysqlDatabaseException e){
 		stderr.writeln(e.msg);
