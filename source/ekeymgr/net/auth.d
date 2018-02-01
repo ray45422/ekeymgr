@@ -1,4 +1,5 @@
 module ekeymgr.net.auth;
+import ek = ekeymgr;
 static import config = ekeymgr.config;
 import std.stdio;
 import std.datetime;
@@ -15,7 +16,7 @@ public:
 		}catch(MysqlDatabaseException e){
 			import std.stdio;
 			import core.stdc.stdlib;
-			stderr.writeln(e.msg);
+			ek.errorLog(e.msg);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -42,7 +43,7 @@ public:
 		try{
 			mysql.query("INSERT INTO `logs` (`log_id`, `time`, `auth_id`, `room_id`, `is_lock`) VALUES (NULL, CURRENT_TIMESTAMP, '" ~ auth_id ~ "', '" ~ room_id ~ "','" ~ is_lock ~ "')");
 		}catch(MysqlDatabaseException e){
-			stderr.writeln(e.msg);
+			ek.errorLog(e.msg);
 			return false;
 		}
 		return true;
@@ -151,7 +152,7 @@ private:
 		try{
 			rows = mysql.query(statement);
 		}catch(MysqlDatabaseException e){
-			stderr.writeln(e.msg);
+			ek.errorLog(e.msg);
 			_isSuccess = false;
 			throw e;
 		}
@@ -170,7 +171,7 @@ private:
 			string service_id = rows.row["service_id"];
 			mysql.query("INSERT INTO `fail_logs` (`log_id`,`time`,`service_id`,`id`,`room_id`) VALUES(NULL,CURRENT_TIMESTAMP,'" ~ service_id ~ "','" ~ id ~ "','" ~ config.load("room_id") ~ "')");
 		}catch(MysqlDatabaseException e){
-			stderr.writeln(e.msg);
+			ek.errorLog(e.msg);
 			return false;
 		}
 		return true;

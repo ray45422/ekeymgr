@@ -17,13 +17,13 @@ public:
 		stop();
 	}
 	void main(){
+		ek.traceLog("TCP Server setup");
 		address = new InternetAddress(config.load!ushort("ekeymgrServerPort"));
 		socket = new TcpSocket(AddressFamily.INET);
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, true);
 		socket.bind(address);
 		socket.listen(1);
-		("listening on " ~ address.toString).writeln;
-		stdout.flush;
+		ek.infoLog("listening on " ~ address.toString);
 		scope(exit) socket.close();
 		while(running){
 			auto p = socket.accept;
@@ -32,8 +32,9 @@ public:
 	}
 	void stop(){
 		import ekeymgr.net.client;
+		ek.traceLog("TCP Server stop");
 		running = false;
-		connect("status", string[].init);
+		connect("status", string[].init, true);
 	}
 	bool isAutoRestart(){
 		return true;
@@ -130,8 +131,7 @@ private:
 				string msg = "status:" ~ (ek.isOpen?"Open":"Close");
 				return new ExecResult(true, msg);
 			case "stop":
-				"stopping daemon...".writeln;
-				stdout.flush();
+				ek.infoLog("stopping daemon...");
 				ekeymgr.stop();
 				return new ExecResult(true, "stopping daemon...");
 			default:

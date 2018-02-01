@@ -84,9 +84,12 @@ int execCommand(string[] args){
 			versionShow();
 			return 2;
 		}
-		getopt(args,
-			"version|v", &versionShow
-		);
+		try{
+			getopt(args,
+				"version|v", &versionShow
+			);
+		}catch(GetOptException e){
+		}
 		return 0;
 	}
 	/* subcommand is set */
@@ -95,6 +98,14 @@ int execCommand(string[] args){
 		stderr.writeln("Setup failed");
 		return 1;
 	}
+	ubyte logLevel = 0;
+	try{
+		getopt(args,
+				"verbose+", &logLevel,
+				"v+", &logLevel);
+	}catch(GetOptException e){
+	}
+	config.set("logLevel", logLevel);
 	args = args.filter!(a => a != subCommand).array;
 	return execSubCommand(subCommand, args);
 }

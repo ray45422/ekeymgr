@@ -1,4 +1,5 @@
 module ekeymgr.config;
+import ek = ekeymgr;
 import std.stdio;
 import std.conv;
 import std.file:exists;
@@ -9,6 +10,7 @@ private class Config{
 	this(){
 		import properd;
 		conf = readProperties(configFile);
+		conf["logLevel"] = "0";
 	}
 	private string[string] conf;
 	void set(T = string)(string key, T value){
@@ -25,12 +27,14 @@ private Config configs(){
 }
 
 bool init(){
+	ek.traceLog("Config init");
 	if(!exists(configFile)){
-		stderr.writeln("Config file does not exist");
+		ek.errorLog("Config file does not exist");
 	}
 	if(!getRoomName()){
 		return false;
 	}
+	ek.traceLog("Config init complete");
 	return true;
 }
 
@@ -42,22 +46,25 @@ void set(T = string)(string key, T value){
 }
 
 bool getRoomName(){
+	ek.traceLog("Room name requesting");
 	string room_id = load("room_id");
+	string room_name;
 	Mysql mysql = new Mysql();
 	mysql.setConnectTimeout(2);
 	try{
 		mysql.connect(load("mySQLServerAddress"), load!ushort("mySQLServerPort"), load("mySQLServerUserName"), load("mySQLServerPassword"), load("mySQLServerDatabase"));
 		auto rows = mysql.query("SELECT rooms.room_name FROM rooms WHERE rooms.room_id='" ~ room_id ~ "'");
 		if(rows.length == 0){
-			import std.stdio;
-			stderr.writeln("room_id:" ~ room_id ~ " was not found");
+			ek.errorLog("room_id:" ~ room_id ~ " was not found");
 			return false;
 		}
-		configs.set("room_name", rows.row["room_name"].dup);
+		room_name = rows.row["room_name"];
+		configs.set("room_name", room_name.dup);
 	}catch(MysqlDatabaseException e){
-		stderr.writeln(e.msg);
+		ek.errorLog(e.msg);
 		return false;
 	}
+	ek.traceLog("Room name:", room_name);
 	return true;
 }
 bool setRoomIPAddress(bool isClose){
@@ -76,10 +83,11 @@ bool setRoomIPAddress(bool isClose){
 			selfAddress = socket.localAddress.toAddrString;
 			socket.close();
 		}catch(Exception e){
-			stderr.writeln(e.msg);
+			ek.errorLog(e.msg);
 			return false;
 		}
 	}
+	ek.errorLog("local IP address:", selfAddress);
 	Mysql mysql = new Mysql();
 	mysql.setConnectTimeout(2);
 	try{
@@ -87,8 +95,9 @@ bool setRoomIPAddress(bool isClose){
 		auto rows = mysql.query("UPDATE rooms SET ip_address='" ~ selfAddress ~ "' WHERE rooms.room_id=" ~ load("room_id"));
 		stdout.flush;
 	}catch(MysqlDatabaseException e){
-		stderr.writeln(e.msg);
+		ek.errorLog(e.msg);
 		return false;
 	}
+	ek.traceLog("IP address was set");
 	return true;
 }

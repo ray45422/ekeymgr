@@ -1,9 +1,10 @@
 module ekeymgr.net.client;
+import ek = ekeymgr;
 static import config = ekeymgr.config;
 import std.stdio;
 import std.string;
 
-int connect(string command, string[] args){
+int connect(string command, string[] args, bool msgDump = false){
 	import std.socket;
 	import core.time;
 	import std.array;
@@ -14,8 +15,8 @@ int connect(string command, string[] args){
 	try{
 		socket.connect(address);
 	}catch(SocketOSException e){
-		stderr.writeln(e.msg);
-		stderr.writeln("Run \'systemctl start ekeymgr.service\' or \'ekeymgr daemon\' as root.");
+		ek.errorLog(e.msg);
+		ek.infoLog("Run \'systemctl start ekeymgr.service\' or \'ekeymgr daemon\' as root.");
 		return 1;
 	}
 	scope(exit) socket.close;
@@ -32,9 +33,11 @@ int connect(string command, string[] args){
 	}else{
 		string code = receive[0];
 		receive = receive[1..receive.length];
-		foreach(msg ; receive){
-			msg.writeln;
-			stdout.flush;
+		if(!msgDump){
+			foreach(msg ; receive){
+				msg.writeln;
+				stdout.flush;
+			}
 		}
 		if(code != "0"){
 			return 1;

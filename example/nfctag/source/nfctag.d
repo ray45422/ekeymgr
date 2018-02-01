@@ -69,8 +69,7 @@ private:
 	}
 	private void loop(){
 		lcdUpdate();
-		"polling start".writeln;
-		stdout.flush;
+		ek.debugLog("polling start");
 		while(!rcs620s.polling() && running){
 			Thread.sleep(dur!("msecs")(500));
 			rcs620s.rfOff();
@@ -86,6 +85,7 @@ private:
 			buz.deactivate;
 			return;
 		}
+		ek.traceLog("tag detected");
 		import ekeymgr.net.auth;
 		Auth auth = new Auth();
 		int ret = auth.authServiceId("FeliCa",arrayHex(rcs620s.idm));
