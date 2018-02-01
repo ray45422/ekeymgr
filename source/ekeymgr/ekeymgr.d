@@ -1,11 +1,13 @@
 module ekeymgr.ekeymgr;
 import core.thread;
-public import ekeymgr.submodule;
-public import locker = ekeymgr.locker.lockManager;
-public import config = ekeymgr.config;
+import std.concurrency: initOnce;
+import ekeymgr.locker;
+import ekeymgr.submodule;
+import config = ekeymgr.config;
 
 void start(){
 	config.init();
+	lockManager.setup();
 	submoduleAdd(new ekeymgr.submodule.TCPServer.TCPServer());
 	startSubmodule();
 	isRunning = true;
@@ -18,19 +20,28 @@ void start(){
 void stop(){
 	isRunning = false;
 }
-
+void setLocker(Locker l){
+	lockManager.setLocker(l);
+}
 bool open(){
-	return locker.open();
+	return lockManager.open();
 }
 bool close(){
-	return locker.close();
+	return lockManager.close();
 }
 bool toggle(){
-	return locker.open();
+	return lockManager.open();
+}
+bool isOpen(){
+	return lockManager.isOpen();
 }
 
 void submoduleAdd(Submodule submodule){
 	submodules.add(new SubmoduleThread(submodule));
+}
+private LockManager lockManager(){
+	static __gshared LockManager lm;
+	return initOnce!lm(new LockManager());
 }
 private class SubmoduleThread: Thread{
 	Submodule submodule;
@@ -57,9 +68,8 @@ private class Submodules{
 	}
 }
 private Submodules submodules(){
-	import std.concurrency: initOnce;
 	static __gshared Submodules sub;
-	return initOnce!sub(new Submodules);
+	return initOnce!sub(new Submodules());
 }
 
 private __gshared bool isRunning;

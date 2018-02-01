@@ -1,14 +1,13 @@
 module nfctag.nfctag;
+import ek = ekeymgr;
 import ekeymgr.submodule;
+import config = ekeymgr.config;
 import std.stdio;
 import std.string;
-import std.variant;
 import core.thread;
 import serial.device;
 import serial.rcs620s;
-import nfctag.lockmanager;
 import dgpio;
-static import config = ekeymgr.config;
 
 class NFCTagModule: Submodule{
 public:
@@ -22,27 +21,26 @@ public:
 		return true;
 	}
 	void open(){
-		lockMan.open();
+		ek.open();
 		lcdUpdate();
 	}
 	void close(){
-		lockMan.close();
+		ek.close();
 		lcdUpdate();
 	}
 	void toggle(){
-		lockMan.toggle();
+		ek.toggle();
 		lcdUpdate;
 	}
 	void stop(){
 		running = false;
 	}
 	bool isLock(){
-		return lockMan.isLock();
+		return !ek.isOpen();
 	}
 private:
 	RCS620S rcs620s;
 	SerialPort lcd;
-	LockManager lockMan;
 	GPIO sw;
 	GPIO buz;
 	string roomName;
@@ -58,7 +56,6 @@ private:
 		openMsg = config.load("openMsg", "Welcome!!");
 		closeMsg = config.load("closeMsg", "See you...");
 		failMsg = config.load("failMsg", "Auth Failed");
-		lockMan = new LockManager();
 		lcd = new SerialPort(config.load("lcdPath", "/dev/ttyUSB1"));
 		lcd.speed(BaudRate.BR_9600);
 		rcs620s = new RCS620S(config.load("rcs620sPath", "/dev/ttyUSB2"));
@@ -68,8 +65,7 @@ private:
 			Thread.sleep(dur!("msecs")(1000));
 			lcd.write(".");
 		}
-		lockMan.open();
-		lockMan.init();
+		ek.open();
 	}
 	private void loop(){
 		lcdUpdate();
@@ -88,7 +84,6 @@ private:
 			rcs620s.close();
 			sw.deactivate;
 			buz.deactivate;
-			lockMan.stop;
 			return;
 		}
 		import ekeymgr.net.auth;
@@ -106,11 +101,11 @@ private:
 			AuthData ad = auth.getLastAuthData;
 			string disp_name = ad.getDispname;
 			clearDisplay();
-			lcd.write(lockMan.isLock?openMsg:closeMsg);
+			lcd.write(ek.isOpen?closeMsg:openMsg);
 			setPos(cast(ubyte)(16-disp_name.length),1);
 			lcd.write(disp_name);
-			lockMan.toggle();
-			auth.addLog(lockMan.isLock);
+			ek.toggle();
+			auth.addLog(!ek.isOpen);
 		}else{
 			clearDisplay();
 			lcd.write(failMsg);
@@ -131,7 +126,7 @@ private:
 		clearDisplay();
 		lcd.write(roomName);
 		setPos(10, 1);
-		lcd.write(lockMan.isLock?"close":"open");
+		lcd.write(ek.isOpen?"open":"close");
 	}
 	private void clearDisplay(){
 		ubyte[2] buf=[0x1b,0x43];

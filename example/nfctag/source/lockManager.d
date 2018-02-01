@@ -1,7 +1,8 @@
-module nfctag.lockmanager;
+module nfctag.lockManager;
+import ekeymgr.locker;
 import servo;
 import dgpio;
-class LockManager{
+class LockManager: Locker{
 private:
 	bool lock;
 	Servo servo;
@@ -11,7 +12,7 @@ private:
 	const ubyte servo_close = 180;
 	const ubyte servo_pin = 17;
 public:
-	this(){
+	void setup(){
 		import core.time;
 		servo = new Servo()
 			.setAutoStop(dur!("seconds")(1))
@@ -28,21 +29,23 @@ public:
 	void stop(){
 		servo.detach();
 	}
-	void open(){
-		if(sw.isHigh()){return;}
+	bool open(){
+		if(sw.isHigh()){return false;}
 		servo.attach(servo_pin);
 		servo.write(servo_open);
 		servo.write(servo_default);
 		servo.detach();
 		lock = false;
+		return true;
 	}
-	void close(){
-		if(sw.isHigh()){return;}
+	bool close(){
+		if(sw.isHigh()){return false;}
 		servo.attach(servo_pin);
 		servo.write(servo_close);
 		servo.write(servo_default);
 		servo.detach();
 		lock = true;
+		return true;
 	}
 	void toggle(){
 		if(lock){
@@ -53,6 +56,9 @@ public:
 	}
 	bool isLock()const{
 		return lock;
+	}
+	bool isOpen(){
+		return !lock;
 	}
 	void setLock(bool status){
 		lock = status;
