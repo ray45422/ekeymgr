@@ -1,4 +1,5 @@
 module ekeymgr.submodule.TCPServer;
+import ek = ekeymgr;
 import config = ekeymgr.config;
 import ekeymgr.submodule;
 import ekeymgr.net.auth;
@@ -62,7 +63,7 @@ private:
 		string[] args = format(buf).split;
 		remoteAddress = socket.remoteAddress.toHostNameString;
 		localAddress = socket.localAddress.toHostNameString;
-		parse(args);
+		socket.send(parse(args));
 		socket.close();
 	}
 	string parse(string[] args){
@@ -127,8 +128,7 @@ private:
 				ekeymgr.toggle();
 				break;
 			case "status":
-				//string msg = "status:" ~ (userdaemon.isLock?"Lock":"Open");
-				string msg = "";
+				string msg = "status:" ~ (ek.isOpen?"Open":"Close");
 				return new ExecResult(true, msg);
 			case "stop":
 				"stopping daemon...".writeln;
