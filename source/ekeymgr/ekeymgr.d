@@ -6,6 +6,7 @@ public import config = ekeymgr.config;
 
 void start(){
 	config.init();
+	submoduleAdd(new ekeymgr.submodule.TCPServer.TCPServer());
 	startSubmodule();
 	isRunning = true;
 	while(isRunning){
