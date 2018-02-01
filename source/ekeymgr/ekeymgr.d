@@ -29,7 +29,7 @@ bool toggle(){
 }
 
 void submoduleAdd(Submodule submodule){
-	submodules ~= new SubmoduleThread(submodule);
+	submodules.add(new SubmoduleThread(submodule));
 }
 private class SubmoduleThread: Thread{
 	Submodule submodule;
@@ -46,20 +46,34 @@ private class SubmoduleThread: Thread{
 		}
 	}
 }
-private SubmoduleThread[] submodules;
-private bool isRunning;
+private class Submodules{
+	private SubmoduleThread[] submodules;
+	ref SubmoduleThread[] original(){
+		return submodules;
+	}
+	void add(SubmoduleThread t){
+		submodules ~= t;
+	}
+}
+private Submodules submodules(){
+	import std.concurrency: initOnce;
+	static __gshared Submodules sub;
+	return initOnce!sub(new Submodules);
+}
+
+private __gshared bool isRunning;
 private void startSubmodule(){
-	foreach(SubmoduleThread s; submodules){
+	foreach(ref s; submodules.original){
 		s.start();
 	}
 }
 private void submoduleCheckRestart(){
-	foreach(SubmoduleThread s; submodules){
+	foreach(ref s; submodules.original){
 		s.autoRestart();
 	}
 }
 private void stopSubmodule(){
-	foreach(SubmoduleThread s; submodules){
+	foreach(ref s; submodules.original){
 		s.stop();
 	}
 }

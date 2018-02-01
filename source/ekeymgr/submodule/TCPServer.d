@@ -30,7 +30,9 @@ public:
 		}
 	}
 	void stop(){
+		import ekeymgr.net.client;
 		running = false;
+		connect("status", string[].init);
 	}
 	bool isAutoRestart(){
 		return true;
