@@ -2,12 +2,15 @@ module ekeymgr.locker;
 
 interface Locker{
 	void setup();
+	void stop();
 	bool open();
 	bool close();
 	bool isOpen();
 }
 class DefaultLocker: Locker{
 	void setup(){
+	}
+	void stop(){
 	}
 	bool open(){
 		return false;
@@ -27,6 +30,9 @@ public:
 	}
 	void setup(){
 		locker.setup();
+	}
+	void stop(){
+		locker.stop();
 	}
 	bool open(){
 		return commandExec(Command.open);

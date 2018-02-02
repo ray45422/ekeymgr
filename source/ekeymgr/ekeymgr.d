@@ -8,6 +8,7 @@ import config = ekeymgr.config;
 void start(){
 	config.init();
 	lockManager.setup();
+	close();
 	submoduleAdd(new ekeymgr.submodule.TCPServer.TCPServer());
 	startSubmodule();
 	isRunning = true;
@@ -16,6 +17,7 @@ void start(){
 		Thread.sleep(dur!"seconds"(1));
 	}
 	stopSubmodule();
+	lockManager.stop();
 }
 void stop(){
 	isRunning = false;

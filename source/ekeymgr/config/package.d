@@ -87,7 +87,7 @@ bool setRoomIPAddress(bool isClose){
 			return false;
 		}
 	}
-	ek.errorLog("local IP address:", selfAddress);
+	ek.traceLog("local IP address:", selfAddress);
 	Mysql mysql = new Mysql();
 	mysql.setConnectTimeout(2);
 	try{
