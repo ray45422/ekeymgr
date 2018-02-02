@@ -6,4 +6,5 @@ public:
 	void main();
 	void stop();
 	bool isAutoRestart();
+	string name();
 }

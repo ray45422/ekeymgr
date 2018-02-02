@@ -20,6 +20,9 @@ public:
 	bool isAutoRestart(){
 		return true;
 	}
+	string name(){
+		return "nfctag";
+	}
 	void open(){
 		ek.open();
 		lcdUpdate();
@@ -52,7 +55,7 @@ private:
 		sw.setInput();
 		buz = new GPIO(22);
 		buz.setOutput();
-		roomName = config.load("roomName");
+		roomName = config.load("room_name");
 		openMsg = config.load("openMsg", "Welcome!!");
 		closeMsg = config.load("closeMsg", "See you...");
 		failMsg = config.load("failMsg", "Auth Failed");

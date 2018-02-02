@@ -8,7 +8,6 @@ import config = ekeymgr.config;
 void start(){
 	config.init();
 	lockManager.setup();
-	close();
 	submoduleAdd(new ekeymgr.submodule.TCPServer.TCPServer());
 	startSubmodule();
 	isRunning = true;
@@ -90,6 +89,7 @@ private class SubmoduleThread: Thread{
 	}
 	void autoRestart(){
 		if(!this.isRunning){
+			debugLog("restart submodule:", submodule.name);
 			this.start();
 		}
 	}
@@ -111,6 +111,7 @@ private Submodules submodules(){
 private __gshared bool isRunning;
 private void startSubmodule(){
 	foreach(ref s; submodules.original){
+		debugLog("start submodule:", s.name);
 		s.start();
 	}
 }
@@ -121,6 +122,7 @@ private void submoduleCheckRestart(){
 }
 private void stopSubmodule(){
 	foreach(ref s; submodules.original){
+		debugLog("stop submodule:", s.name);
 		s.stop();
 	}
 }

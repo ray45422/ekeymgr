@@ -39,6 +39,9 @@ public:
 	bool isAutoRestart(){
 		return true;
 	}
+	string name(){
+		return "TCPServer";
+	}
 private:
 	Address address;
 	Socket socket;

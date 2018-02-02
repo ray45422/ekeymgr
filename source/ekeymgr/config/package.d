@@ -17,7 +17,15 @@ private class Config{
 		this.conf[key] = value.to!string;
 	}
 	T get(T = string)(string key, const T defaultValue = T.init){
+		import std.algorithm.searching: canFind;
+		if(!keys.canFind(key)){
+			return defaultValue;
+		}
 		return conf[key].to!T;
+	}
+	string[] keys(){
+		import std.array;
+		return conf.keys;
 	}
 }
 private Config configs(){
