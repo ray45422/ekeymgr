@@ -31,7 +31,7 @@ bool close(){
 	return lockManager.close();
 }
 bool toggle(){
-	return lockManager.open();
+	return lockManager.toggle();
 }
 bool isOpen(){
 	return lockManager.isOpen();
