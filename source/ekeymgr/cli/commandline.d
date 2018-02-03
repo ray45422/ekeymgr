@@ -1,4 +1,4 @@
-module ekeymgr.command;
+module ekeymgr.cli.commandline;
 import std.stdio;
 import std.getopt;
 import std.algorithm.iteration: filter;
@@ -8,10 +8,50 @@ import ek = ekeymgr;
 import ekeymgr.locker;
 
 alias SubCommand = int delegate(string[] args);
-private SubCommand[string] subCommands;
 void addSubCommand(string name, SubCommand command){
 	subCommands[name] = command;
 }
+int runCommandLine(string[] args){
+	import std.array;
+	addPresetSubCommand();
+	string subCommand = searchSubcommand(args);
+	/* no subcommand */
+	if(subCommand is null){
+		void versionShow(){
+			import ekeymgr.version_;
+			"ekeymgr version ".write;
+			ekeymgrVersion.writeln;
+		}
+		if(args.length == 1){
+			versionShow();
+			return 2;
+		}
+		try{
+			getopt(args,
+				"version|v", &versionShow
+			);
+		}catch(GetOptException e){
+		}
+		return 0;
+	}
+	/* subcommand is set */
+	if(!ek.config.init()){
+		stderr.writeln("Setup failed");
+		return 1;
+	}
+	ubyte logLevel = 0;
+	try{
+		getopt(args,
+				"verbose+", &logLevel,
+				"v+", &logLevel);
+	}catch(GetOptException e){
+	}
+	ek.config.set("logLevel", logLevel);
+	args = args.filter!(a => a != subCommand).array;
+	return execSubCommand(subCommand, args);
+}
+
+private SubCommand[string] subCommands;
 private int execSubCommand(string name, string[] args){
 	if(!subCommands.keys.canFind(name)){
 		import client = ekeymgr.net.client;
@@ -19,7 +59,7 @@ private int execSubCommand(string name, string[] args){
 	}
 	return subCommands[name](args);
 }
-string searchSubcommand(string[] args){
+private string searchSubcommand(string[] args){
 	foreach(string arg; args[1..$]){
 		if(arg[0] !=  '-'){
 			return arg;
@@ -27,7 +67,7 @@ string searchSubcommand(string[] args){
 	}
 	return null;
 }
-void addPresetSubCommand(){
+private void addPresetSubCommand(){
 	addSubCommand("version", (string[] args){
 		import ekeymgr.version_;
 		"ekeymgr version ".write;
@@ -67,43 +107,4 @@ void addPresetSubCommand(){
 		static import crypto = ekeymgr.crypto;
 		return crypto.hashGen();
 	});
-}
-int execCommand(string[] args){
-	import std.array;
-	addPresetSubCommand();
-	string subCommand = searchSubcommand(args);
-	/* no subcommand */
-	if(subCommand is null){
-		void versionShow(){
-			import ekeymgr.version_;
-			"ekeymgr version ".write;
-			ekeymgrVersion.writeln;
-		}
-		if(args.length == 1){
-			versionShow();
-			return 2;
-		}
-		try{
-			getopt(args,
-				"version|v", &versionShow
-			);
-		}catch(GetOptException e){
-		}
-		return 0;
-	}
-	/* subcommand is set */
-	if(!ek.config.init()){
-		stderr.writeln("Setup failed");
-		return 1;
-	}
-	ubyte logLevel = 0;
-	try{
-		getopt(args,
-				"verbose+", &logLevel,
-				"v+", &logLevel);
-	}catch(GetOptException e){
-	}
-	ek.config.set("logLevel", logLevel);
-	args = args.filter!(a => a != subCommand).array;
-	return execSubCommand(subCommand, args);
 }
