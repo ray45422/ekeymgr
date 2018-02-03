@@ -1,10 +1,10 @@
 module ekeymgr.command;
 import std.stdio;
 import std.getopt;
-import std.array;
 import std.algorithm.iteration: filter;
 import std.algorithm.comparison: equal;
 import std.algorithm.searching: canFind;
+import ek = ekeymgr;
 import ekeymgr.locker;
 
 alias SubCommand = int delegate(string[] args);
@@ -35,13 +35,11 @@ void addPresetSubCommand(){
 		return 0;
 	});
 	addSubCommand("daemon", (string[] args){
-		import ekeymgr = ekeymgr;
-		import config = ekeymgr.config;
-		if(!config.setRoomIPAddress(false)){
+		if(!ek.config.setRoomIPAddress(false)){
 			return false;
 		}
-		ekeymgr.start();
-		config.setRoomIPAddress(true);
+		ek.start();
+		ek.config.setRoomIPAddress(true);
 		return 0;
 	});
 	addSubCommand("auth", (string[] args){
@@ -71,6 +69,7 @@ void addPresetSubCommand(){
 	});
 }
 int execCommand(string[] args){
+	import std.array;
 	addPresetSubCommand();
 	string subCommand = searchSubcommand(args);
 	/* no subcommand */
@@ -93,8 +92,7 @@ int execCommand(string[] args){
 		return 0;
 	}
 	/* subcommand is set */
-	import config = ekeymgr.config;
-	if(!config.init()){
+	if(!ek.config.init()){
 		stderr.writeln("Setup failed");
 		return 1;
 	}
@@ -105,7 +103,7 @@ int execCommand(string[] args){
 				"v+", &logLevel);
 	}catch(GetOptException e){
 	}
-	config.set("logLevel", logLevel);
+	ek.config.set("logLevel", logLevel);
 	args = args.filter!(a => a != subCommand).array;
 	return execSubCommand(subCommand, args);
 }

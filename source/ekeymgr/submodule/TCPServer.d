@@ -1,16 +1,12 @@
 module ekeymgr.submodule.TCPServer;
 import ek = ekeymgr;
-import config = ekeymgr.config;
 import ekeymgr.submodule;
 import ekeymgr.net.auth;
-import std.stdio;
 import std.socket;
-import std.file;
 import std.string;
-import std.array;
 import std.getopt;
-import core.stdc.stdlib;
 import core.thread;
+
 class TCPServer:Submodule{
 public:
 	~this(){
@@ -18,7 +14,7 @@ public:
 	}
 	void main(){
 		ek.traceLog("TCP Server setup");
-		address = new InternetAddress(config.load!ushort("ekeymgrServerPort"));
+		address = new InternetAddress(ek.config.load!ushort("ekeymgrServerPort"));
 		socket = new TcpSocket(AddressFamily.INET);
 		socket.setOption(SocketOptionLevel.SOCKET, SocketOption.REUSEADDR, true);
 		socket.bind(address);
@@ -62,7 +58,6 @@ private:
 		serviceIdAuthFlag = false;
 		auto buf = new char[255];
 		socket.receive(buf);
-		stdout.flush;
 		string[] args = format(buf).split;
 		remoteAddress = socket.remoteAddress.toHostNameString;
 		localAddress = socket.localAddress.toHostNameString;
@@ -80,7 +75,7 @@ private:
 		}else{
 			if(args[0] == "stop"){
 				result = new ExecResult(false, "Not allow to stop from outside.");
-			}else if(remoteAddress == config.load("mySQLServerAddress") || args[0] == "status"){
+			}else if(remoteAddress == ek.config.load("mySQLServerAddress") || args[0] == "status"){
 				result = exec(args);
 			}else if(args.length != 3){
 				result = new ExecResult(false, "Authentication required.");

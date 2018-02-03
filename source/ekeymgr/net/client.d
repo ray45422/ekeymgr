@@ -1,6 +1,5 @@
 module ekeymgr.net.client;
 import ek = ekeymgr;
-static import config = ekeymgr.config;
 import std.stdio;
 import std.string;
 
@@ -8,7 +7,7 @@ int connect(string command, string[] args, bool msgDump = false){
 	import std.socket;
 	import core.time;
 	import std.array;
-	auto address = new InternetAddress(config.load("ekeymgrServerAddress"), config.load!ushort("ekeymgrServerPort"));
+	auto address = new InternetAddress(ek.config.load("ekeymgrServerAddress"), ek.config.load!ushort("ekeymgrServerPort"));
 	auto socket = new TcpSocket(AddressFamily.INET);
 	socket.setOption(SocketOptionLevel.SOCKET, SocketOption.RCVTIMEO, dur!("seconds")(10));
 	socket.setOption(SocketOptionLevel.SOCKET, SocketOption.SNDTIMEO, dur!("seconds")(10));

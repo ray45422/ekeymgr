@@ -1,6 +1,5 @@
 module ekeymgr.net.auth;
 import ek = ekeymgr;
-static import config = ekeymgr.config;
 import std.stdio;
 import std.datetime;
 import std.conv;
@@ -12,7 +11,7 @@ public:
 		mysql = new Mysql();
 		mysql.setConnectTimeout(2);
 		try{
-			mysql.connect(config.load("mySQLServerAddress"), config.load!ushort("mySQLServerPort"), config.load("mySQLServerUserName"), config.load("mySQLServerPassword"), config.load("mySQLServerDatabase"));
+			mysql.connect(ek.config.load("mySQLServerAddress"), ek.config.load!ushort("mySQLServerPort"), ek.config.load("mySQLServerUserName"), ek.config.load("mySQLServerPassword"), ek.config.load("mySQLServerDatabase"));
 		}catch(MysqlDatabaseException e){
 			import std.stdio;
 			import core.stdc.stdlib;
@@ -107,7 +106,7 @@ private:
 		//normal authentication
 		try{
 			rows = inquery(SQLselect ~ SQLjoin ~ SQLwherePre ~ SQLwhere ~
-				" AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.load("room_id") ~ "'"
+				" AND authdata.valid_flag=1 AND rooms.room_id='" ~ ek.config.load("room_id") ~ "'"
 			);
 		}catch(MysqlDatabaseException e){
 			return 1;
@@ -121,7 +120,7 @@ private:
 		//group authentication
 		try{
 			rows = inquery(SQLselect ~ SQLjoinGroup ~ SQLwherePre ~ SQLwhere ~
-				" AND authdata.valid_flag=1 AND rooms.room_id='" ~ config.load("room_id") ~ "'"
+				" AND authdata.valid_flag=1 AND rooms.room_id='" ~ ek.config.load("room_id") ~ "'"
 			);
 		}catch(MysqlDatabaseException e){
 			return 1;
@@ -169,7 +168,7 @@ private:
 				return false;
 			}
 			string service_id = rows.row["service_id"];
-			mysql.query("INSERT INTO `fail_logs` (`log_id`,`time`,`service_id`,`id`,`room_id`) VALUES(NULL,CURRENT_TIMESTAMP,'" ~ service_id ~ "','" ~ id ~ "','" ~ config.load("room_id") ~ "')");
+			mysql.query("INSERT INTO `fail_logs` (`log_id`,`time`,`service_id`,`id`,`room_id`) VALUES(NULL,CURRENT_TIMESTAMP,'" ~ service_id ~ "','" ~ id ~ "','" ~ ek.config.load("room_id") ~ "')");
 		}catch(MysqlDatabaseException e){
 			ek.errorLog(e.msg);
 			return false;

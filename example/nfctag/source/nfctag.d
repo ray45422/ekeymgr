@@ -1,7 +1,6 @@
 module nfctag.nfctag;
 import ek = ekeymgr;
 import ekeymgr.submodule;
-import config = ekeymgr.config;
 import std.stdio;
 import std.string;
 import core.thread;
@@ -55,13 +54,13 @@ private:
 		sw.setInput();
 		buz = new GPIO(22);
 		buz.setOutput();
-		roomName = config.load("room_name");
-		openMsg = config.load("openMsg", "Welcome!!");
-		closeMsg = config.load("closeMsg", "See you...");
-		failMsg = config.load("failMsg", "Auth Failed");
-		lcd = new SerialPort(config.load("lcdPath", "/dev/ttyUSB1"));
+		roomName = ek.config.load("room_name");
+		openMsg = ek.config.load("openMsg", "Welcome!!");
+		closeMsg = ek.config.load("closeMsg", "See you...");
+		failMsg = ek.config.load("failMsg", "Auth Failed");
+		lcd = new SerialPort(ek.config.load("lcdPath", "/dev/ttyUSB1"));
 		lcd.speed(BaudRate.BR_9600);
-		rcs620s = new RCS620S(config.load("rcs620sPath", "/dev/ttyUSB2"));
+		rcs620s = new RCS620S(ek.config.load("rcs620sPath", "/dev/ttyUSB2"));
 		clearDisplay();
 		lcd.write("init");
 		while(!rcs620s.init()){
