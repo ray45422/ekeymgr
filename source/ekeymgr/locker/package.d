@@ -7,22 +7,6 @@ interface Locker{
 	bool close();
 	bool isOpen();
 }
-class DefaultLocker: Locker{
-	void setup(){
-	}
-	void stop(){
-	}
-	bool open(){
-		return false;
-	}
-	bool close(){
-		return false;
-	}
-	bool isOpen(){
-		return false;
-	}
-}
-
 class LockManager{
 public:
 	void setLocker(Locker _locker){
@@ -80,5 +64,20 @@ private:
 		}
 		lock = false;
 		return ret;
+	}
+}
+private class DefaultLocker: Locker{
+	void setup(){
+	}
+	void stop(){
+	}
+	bool open(){
+		return false;
+	}
+	bool close(){
+		return false;
+	}
+	bool isOpen(){
+		return false;
 	}
 }

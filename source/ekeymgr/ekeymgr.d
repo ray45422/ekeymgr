@@ -6,8 +6,6 @@ import ekeymgr.submodule;
 import ekeymgr.cli.log;
 import config = ekeymgr.config;
 
-public import ekeymgr.submodule: submoduleAdd;
-
 void start(){
 	config.init();
 	lockManager.setup();
@@ -34,6 +32,7 @@ bool toggle(){
 bool isOpen(){
 	return lockManager.isOpen();
 }
+
 private LockManager lockManager(){
 	static __gshared LockManager lm;
 	return initOnce!lm(new LockManager());
