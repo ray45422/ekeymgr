@@ -1,6 +1,6 @@
-import ekeymgr.command;
+import ekeymgr.cli;
 
 int main(string[] args)
 {
-	return execCommand(args);
+	return runCommandLine(args);
 }
