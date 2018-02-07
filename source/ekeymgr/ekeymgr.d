@@ -2,6 +2,7 @@ module ekeymgr.ekeymgr;
 import core.thread;
 import std.concurrency: initOnce;
 import ekeymgr.locker;
+import ekeymgr.net.auth;
 import ekeymgr.submodule;
 import ekeymgr.cli.log;
 import config = ekeymgr.config;
@@ -23,14 +24,34 @@ void setLocker(Locker l){
 bool open(){
 	return lockManager.open();
 }
+bool open(AuthData ad){
+	addLog(ad);
+	return open();
+}
 bool close(){
 	return lockManager.close();
+}
+bool close(AuthData ad){
+	addLog(ad);
+	return close();
 }
 bool toggle(){
 	return lockManager.toggle();
 }
+bool toggle(AuthData ad){
+	addLog(ad);
+	return toggle();
+}
 bool isOpen(){
 	return lockManager.isOpen();
+}
+AuthData authServiceId(string service, string id){
+	Auth auth = new Auth();
+	int ret = auth.authServiceId(service, id);
+	if(ret != 0){
+		return null;
+	}
+	return auth.getLastAuthData;
 }
 
 private LockManager lockManager(){

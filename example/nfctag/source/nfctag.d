@@ -88,10 +88,8 @@ private:
 			return;
 		}
 		ek.traceLog("tag detected");
-		import ekeymgr.net.auth;
-		Auth auth = new Auth();
-		int ret = auth.authServiceId("FeliCa",arrayHex(rcs620s.idm));
-		if(ret == 0){
+		auto ad = ek.authServiceId("FeliCa", arrayHex(rcs620s.idm));
+		if(ad !is null){
 			if(sw.isHigh()){
 				clearDisplay();
 				lcd.write("PleaseCloseDoor");
@@ -100,14 +98,12 @@ private:
 				buzzer();
 			}
 			buz.setLow();
-			AuthData ad = auth.getLastAuthData;
 			string disp_name = ad.getDispname;
 			clearDisplay();
 			lcd.write(ek.isOpen?closeMsg:openMsg);
 			setPos(cast(ubyte)(16-disp_name.length),1);
 			lcd.write(disp_name);
-			ek.toggle();
-			auth.addLog(!ek.isOpen);
+			ek.toggle(ad);
 		}else{
 			clearDisplay();
 			lcd.write(failMsg);

@@ -5,6 +5,25 @@ import std.datetime;
 import std.conv;
 import mysql.d;
 
+public bool addLog(AuthData ad){
+	auto mysql = new Mysql();
+	mysql.setConnectTimeout(2);
+	try{
+		mysql.connect(ek.config.load("mySQLServerAddress"), ek.config.load!ushort("mySQLServerPort"), ek.config.load("mySQLServerUserName"), ek.config.load("mySQLServerPassword"), ek.config.load("mySQLServerDatabase"));
+	}catch(MysqlDatabaseException e){
+		ek.errorLog(e.msg);
+	}
+	string auth_id = ad.auth_id;
+	string room_id = ad.room_id;
+	string is_lock = ek.isOpen?"0":"1";
+	try{
+		mysql.query("INSERT INTO `logs` (`log_id`, `time`, `auth_id`, `room_id`, `is_lock`) VALUES (NULL, CURRENT_TIMESTAMP, '" ~ auth_id ~ "', '" ~ room_id ~ "','" ~ is_lock ~ "')");
+	}catch(MysqlDatabaseException e){
+		ek.errorLog(e.msg);
+		return false;
+	}
+	return true;
+}
 class Auth{
 public:
 	this(){
