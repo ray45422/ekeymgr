@@ -109,6 +109,10 @@ private:
 		}
 		switch(args[0]){
 			case "open":
+				if(args.length == 1){
+					ekeymgr.open();
+					break;
+				}
 				if(args.length < 3){
 					return new ExecResult(false,"Authentication failure");
 				}
@@ -119,6 +123,10 @@ private:
 				ekeymgr.open(ad);
 				break;
 			case "close":
+				if(args.length == 1){
+					ekeymgr.close();
+					break;
+				}
 				if(args.length < 3){
 					return new ExecResult(false,"Authentication failure");
 				}
@@ -129,6 +137,10 @@ private:
 				ekeymgr.close(ad);
 				break;
 			case "toggle":
+				if(args.length == 1){
+					ekeymgr.toggle();
+					break;
+				}
 				if(args.length < 3){
 					return new ExecResult(false,"Authentication failure");
 				}

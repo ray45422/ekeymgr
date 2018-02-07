@@ -13,6 +13,7 @@ void addSubCommand(string name, SubCommand command){
 }
 int runCommandLine(string[] args){
 	import std.array;
+	args = args[1..$];
 	addPresetSubCommand();
 	string subCommand = searchSubcommand(args);
 	/* no subcommand */
@@ -60,7 +61,7 @@ private int execSubCommand(string name, string[] args){
 	return subCommands[name](args);
 }
 private string searchSubcommand(string[] args){
-	foreach(string arg; args[1..$]){
+	foreach(string arg; args){
 		if(arg[0] !=  '-'){
 			return arg;
 		}
@@ -94,12 +95,12 @@ private void addPresetSubCommand(){
 		import ekeymgr.net.auth;
 		Auth auth = new Auth();
 		if(isServiceIdAuth){
-			auto service = args[1];
-			auto id = args[2];
+			auto service = args[0];
+			auto id = args[1];
 			return auth.authServiceId(service, id);
 		}else{
-			auto user = args[1];
-			auto id = args[2];
+			auto user = args[0];
+			auto id = args[1];
 			return auth.authUserId(user, id);
 		}
 	});

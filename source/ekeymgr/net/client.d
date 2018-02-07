@@ -2,6 +2,7 @@ module ekeymgr.net.client;
 import ek = ekeymgr;
 import std.stdio;
 import std.string;
+import std.json;
 
 int connect(string command, string[] args, bool msgDump = false){
 	import std.socket;
@@ -19,9 +20,10 @@ int connect(string command, string[] args, bool msgDump = false){
 		return 1;
 	}
 	scope(exit) socket.close;
+	argsToJson(command, args);
 	string str = command;
-	for(int i = 1; i < args.length; ++i){
-		str = str ~ " " ~ args[i];
+	foreach(arg; args){
+		str = str ~ " " ~ arg;
 	}
 	socket.send(str);
 	auto buf = new char[255];
@@ -43,6 +45,58 @@ int connect(string command, string[] args, bool msgDump = false){
 		}
 	}
 	return 0;
+}
+JSONValue argsToJson(string command, string[] args){
+	import std.algorithm;
+	import std.getopt;
+	JSONValue jv;
+	jv["command"] = command;
+	switch(command){
+		case "toggle":
+		case "open":
+		case "close":
+			string[string] auth;
+			bool isServiceId = false;
+			getopt(args, config.passThrough, "service-id-auth", &isServiceId);
+			int n = 0;
+			foreach(arg; args){
+				if(!args.startsWith("-")){
+					n++;
+				}
+			}
+			if(n < 2){
+				break;
+			}
+			for(int i = 0; i < args.length; i++){
+				string arg = args[i];
+				if(arg.startsWith("-")){
+					continue;
+				}
+				if(auth.length == 1){
+					auth["id"] = arg;
+					args = args.remove(i);
+					i--;
+					jv.object["auth"] = auth;
+					break;
+				}
+				if(auth.length == 0){
+					if(isServiceId){
+						auth["service"] = arg;
+					}else{
+						auth["user"] = arg;
+					}
+					args = args.remove(i);
+					i--;
+					continue;
+				}
+			}
+			break;
+		default:
+			break;
+	}
+	jv.object["args"] = args;
+	jv.toString.writeln;
+	return jv;
 }
 string format(char[] buf){
 	for(int i = 0; i < buf.length; ++i){
