@@ -65,6 +65,14 @@ AuthData authServiceId(string service, string id){
 	}
 	return auth.getLastAuthData;
 }
+AuthData authUserId(string user, string id){
+	Auth auth = new Auth();
+	int ret = auth.authUserId(user, id);
+	if(ret != 0){
+		return null;
+	}
+	return auth.getLastAuthData;
+}
 
 private LockManager lockManager(){
 	static __gshared LockManager lm;
