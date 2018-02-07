@@ -25,22 +25,34 @@ bool open(){
 	return lockManager.open();
 }
 bool open(AuthData ad){
+	bool ret = open();
+	if(!ret){
+		return ret;
+	}
 	addLog(ad);
-	return open();
+	return ret;
 }
 bool close(){
 	return lockManager.close();
 }
 bool close(AuthData ad){
+	bool ret = close();
+	if(!ret){
+		return ret;
+	}
 	addLog(ad);
-	return close();
+	return ret;
 }
 bool toggle(){
 	return lockManager.toggle();
 }
 bool toggle(AuthData ad){
+	bool ret = toggle();
+	if(!ret){
+		return ret;
+	}
 	addLog(ad);
-	return toggle();
+	return ret;
 }
 bool isOpen(){
 	return lockManager.isOpen();
