@@ -5,7 +5,8 @@ import std.stdio;
 void errorLog(T...)(T msgs){
 	stderr.write("[ERROR]");
 	foreach(ref msg; msgs){
-		stderr.write(" " ~ msg);
+		stderr.write(" ");
+		stderr.write(msg);
 	}
 	stderr.writeln();
 }
@@ -24,7 +25,8 @@ private void log(T...)(LogLevel level, T msgs){
 	if(level <= logLevel){
 		stdout.write("[" ~ logLevelName[level] ~ "]");
 		foreach(ref msg; msgs){
-			stdout.write(" " ~ msg);
+			stdout.write(" ");
+			stdout.write(msg);
 		}
 		stdout.writeln();
 		stdout.flush;
