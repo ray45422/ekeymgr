@@ -69,6 +69,7 @@ private:
 			getopt(args, "service-id-auth", &serviceIdAuthFlag);
 		}catch(Exception e){
 		}
+		ek.traceLog(args);
 		ExecResult result;
 		if(remoteAddress == localAddress || remoteAddress == "127.0.0.1"){
 			result = exec(args);
@@ -108,22 +109,34 @@ private:
 		}
 		switch(args[0]){
 			case "open":
-				if(args.length < 4 && !auth(args)){
+				if(args.length < 3){
 					return new ExecResult(false,"Authentication failure");
 				}
-				ekeymgr.open();
+				auto ad = auth(args);
+				if(ad is null){
+					return new ExecResult(false,"Authentication failure");
+				}
+				ekeymgr.open(ad);
 				break;
 			case "close":
-				if(args.length < 4 && !auth(args)){
+				if(args.length < 3){
 					return new ExecResult(false,"Authentication failure");
 				}
-				ekeymgr.close();
+				auto ad = auth(args);
+				if(ad is null){
+					return new ExecResult(false,"Authentication failure");
+				}
+				ekeymgr.close(ad);
 				break;
 			case "toggle":
-				if(args.length < 4 && !auth(args)){
+				if(args.length < 3){
 					return new ExecResult(false,"Authentication failure");
 				}
-				ekeymgr.toggle();
+				auto ad = auth(args);
+				if(ad is null){
+					return new ExecResult(false,"Authentication failure");
+				}
+				ekeymgr.toggle(ad);
 				break;
 			case "status":
 				string msg = "status:" ~ (ek.isOpen?"Open":"Close");
@@ -137,17 +150,15 @@ private:
 		}
 		return new ExecResult(true, "");
 	}
-	bool auth(string[] args){
-		_auth = new Auth();
-		bool result = true;
+	AuthData auth(string[] args){
 		if(args.length == 3){
 			if(serviceIdAuthFlag){
-				result = _auth.authServiceId(args[1], args[2]) == 0;
+				return ekeymgr.authServiceId(args[1], args[2]);
 			}else{
-				result = _auth.authUserId(args[1], args[2]) == 0;
+				return ekeymgr.authUserId(args[1], args[2]);
 			}
 		}
-		return result;
+		return null;
 	}
 }
 class ExecResult{
