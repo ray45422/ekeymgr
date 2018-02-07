@@ -65,10 +65,9 @@ private:
 		socket.close();
 	}
 	string parse(string[] args){
-		try{
-			getopt(args, "service-id-auth", &serviceIdAuthFlag);
-		}catch(Exception e){
-		}
+		getopt(args,
+				config.passThrough,
+				"service-id-auth", &serviceIdAuthFlag);
 		ek.traceLog(args);
 		ExecResult result;
 		if(remoteAddress == localAddress || remoteAddress == "127.0.0.1"){

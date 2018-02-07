@@ -29,6 +29,7 @@ int runCommandLine(string[] args){
 		}
 		try{
 			getopt(args,
+				config.passThrough,
 				"version|v", &versionShow
 			);
 		}catch(GetOptException e){
@@ -41,12 +42,10 @@ int runCommandLine(string[] args){
 		return 1;
 	}
 	ubyte logLevel = 0;
-	try{
-		getopt(args,
-				"verbose+", &logLevel,
-				"v+", &logLevel);
-	}catch(GetOptException e){
-	}
+	getopt(args,
+			config.caseSensitive, config.bundling, config.passThrough,
+			"verbose+", &logLevel,
+			"v+", &logLevel);
 	ek.config.set("logLevel", logLevel);
 	args = args.filter!(a => a != subCommand).array;
 	return execSubCommand(subCommand, args);
