@@ -68,28 +68,22 @@ private:
 	}
 	string parse(string jsonStr){
 		JSONValue json = parseJSON(jsonStr);
-		ek.traceLog(json);
-		ExecResult result;
+		JSONValue result = parseJSON(`{"successful": false, "message":""}`);
 		if(remoteAddress == localAddress || remoteAddress == "127.0.0.1"){
 			result = exec(json);
 		}else{
 			if(json["command"].str == "stop"){
-				result = new ExecResult(false, "Not allow to stop from outside.");
+				result["message"] = "Not allow to stop from outside.";
 			}else if(remoteAddress == ek.config.load("mySQLServerAddress") || json["command"].str == "status"){
 				result = exec(json);
 			}else if(!json.object.keys.canFind("auth")){
-				result = new ExecResult(false, "Authentication required.");
+				result["message"] = "Authentication required.";
 			}else{
 				result = exec(json);
 			}
 		}
-		string msg = "";
-		if(result.isSuccess){
-			msg = "0\n";
-		}else{
-			msg = "1\n";
-		}
-		return msg ~ result.msg;
+		ek.traceLog(result);
+		return result.toString;
 	}
 	string format(char[] buf){
 		for(int i = 0; i < buf.length; ++i){
@@ -101,8 +95,9 @@ private:
 		import std.conv;
 	  	return buf.to!string.chomp;
 	}
-	ExecResult exec(JSONValue json){
+	JSONValue exec(JSONValue json){
 		JSONValue authJson;
+		JSONValue result = parseJSON(`{"successful": false, "message":""}`);
 		bool isExistAuthData = false;
 		if(json.object.keys.canFind("auth")){
 			authJson = json["auth"];
@@ -116,12 +111,17 @@ private:
 				}
 				auto ad = ek.auth(authJson);
 				if(ad is null){
-					return new ExecResult(false,"Authentication failure");
+					result["message"] = "Authentication failure";
+					return result;
 				}
 				if(!ekeymgr.open(ad)){
-					return new ExecResult(false, "Key operation failure");
+					result["message"] = "Key operation failure";
+					result.object["key"] = ek.keyData();
+					return result;
 				}
-				break;
+				result["successful"] = true;
+				result.object["key"] = ek.keyData();
+				return result;
 			case "close":
 				if(!isExistAuthData){
 					ekeymgr.close();
@@ -129,12 +129,17 @@ private:
 				}
 				auto ad = ek.auth(authJson);
 				if(ad is null){
-					return new ExecResult(false,"Authentication failure");
+					result["message"] = "Authentication failure";
+					return result;
 				}
 				if(!ekeymgr.close(ad)){
-					return new ExecResult(false, "Key operation failure");
+					result["message"] = "Key operation failure";
+					result.object["key"] = ek.keyData();
+					return result;
 				}
-				break;
+				result["successful"] = true;
+				result.object["key"] = ek.keyData();
+				return result;
 			case "toggle":
 				if(!isExistAuthData){
 					ekeymgr.toggle();
@@ -142,33 +147,32 @@ private:
 				}
 				auto ad = ek.auth(authJson);
 				if(ad is null){
-					return new ExecResult(false,"Authentication failure");
+					result["message"] = "Authentication failure";
+					return result;
 				}
 				if(!ekeymgr.toggle(ad)){
-					return new ExecResult(false, "Key operation failure");
+					result["message"] = "Key operation failure";
+					result.object["key"] = ek.keyData();
+					return result;
 				}
-				break;
+				result["successful"] = true;
+				result.object["key"] = ek.keyData();
+				return result;
 			case "status":
-				string msg = "status:" ~ (ek.isOpen?"Open":"Close");
-				return new ExecResult(true, msg);
+				result["successful"] = true;
+				result["message"] = "status:" ~ (ek.isOpen?"Open":"Close");
+				result.object["key"] = ek.keyData();
+				return result;
 			case "stop":
 				ek.infoLog("stopping daemon...");
 				ekeymgr.stop();
-				return new ExecResult(true, "stopping daemon...");
+				result["successful"] = true;
+				result["message"] = "stopping daemon...";
+				return result;
 			default:
-				return new ExecResult(false, "Unknown operation " ~ json["command"].str);
+				result["message"] = "Unknown operation " ~ json["command"].str;
+				return result;
 		}
-		return new ExecResult(true, "");
+		return result;
 	}
-}
-class ExecResult{
-public:
-	this(){
-	}
-	this(bool isSuccess, string msg){
-		this.isSuccess = isSuccess;
-		this.msg = msg;
-	}
-	bool isSuccess = false;
-	string msg = "";
 }

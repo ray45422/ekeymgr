@@ -23,21 +23,17 @@ int connect(string command, string[] args, bool msgDump = false){
 	socket.send(argsToJson(command, args).toString);
 	auto buf = new char[255];
 	socket.receive(buf);
-	string[] receive = format(buf).split('\n');
-	if(receive.length == 0){
+	string jsonReceive = format(buf);
+	if(jsonReceive.length == 0){
 		return 1;
-	}else{
-		string code = receive[0];
-		receive = receive[1..receive.length];
-		if(!msgDump){
-			foreach(msg ; receive){
-				msg.writeln;
-				stdout.flush;
-			}
-		}
-		if(code != "0"){
-			return 1;
-		}
+	}
+	JSONValue result = parseJSON(jsonReceive);
+	if(result["successful"].type == JSON_TYPE.FALSE){
+		return 1;
+	}
+	auto msg = result["message"].str;
+	if(msg.length != 0){
+		msg.writeln;
 	}
 	return 0;
 }
@@ -52,7 +48,9 @@ JSONValue argsToJson(string command, string[] args){
 		case "close":
 			string[string] auth;
 			bool isServiceId = false;
+			args = "dummy" ~ args;
 			getopt(args, config.passThrough, "service-id-auth", &isServiceId);
+			args = args[1..$];
 			int n = 0;
 			foreach(arg; args){
 				if(!args.startsWith("-")){
@@ -92,7 +90,6 @@ JSONValue argsToJson(string command, string[] args){
 	if(args.length != 0){
 		jv.object["args"] = args;
 	}
-	jv.toString.writeln;
 	return jv;
 }
 string format(char[] buf){

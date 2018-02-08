@@ -59,6 +59,12 @@ bool toggle(AuthData ad){
 bool isOpen(){
 	return lockManager.isOpen();
 }
+JSONValue keyData(){
+	JSONValue jv = ["isOpen": isOpen];
+	jv.object["roomName"] = config.load("roomName", "");
+	jv.object["roomID"] = config.load!int("room_id");
+	return jv;
+}
 AuthData auth(JSONValue jsonAuth){
 	string[] keys = jsonAuth.object.keys;
 	if(keys.canFind("user") && keys.canFind("id")){

@@ -45,11 +45,9 @@ function room_table(){
 					socket_send($socket, $msg, strlen($msg), MSG_EOF);
 					socket_recv($socket, $msg, 255, MSG_WAITALL);
 					socket_close($socket);
-					if(substr($msg, 0, 1) === "0"){
-						$row[1] = makelink(substr($msg,9), "/api/1.0/toggle.php", "room_id=$room_id");
-					}else{
-						$row[1] = "Error";
-					}
+					$jsonResult = json_decode($msg, true);
+					$isOpen = $jsonResult["key"]["isOpen"];
+					$row[1] = makelink($isOpen?"Open":"Close", "/api/1.0/toggle.php", "room_id=$room_id");
 					$table->add($row);
 				}
 			}
