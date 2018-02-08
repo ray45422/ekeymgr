@@ -20,12 +20,7 @@ int connect(string command, string[] args, bool msgDump = false){
 		return 1;
 	}
 	scope(exit) socket.close;
-	argsToJson(command, args);
-	string str = command;
-	foreach(arg; args){
-		str = str ~ " " ~ arg;
-	}
-	socket.send(str);
+	socket.send(argsToJson(command, args).toString);
 	auto buf = new char[255];
 	socket.receive(buf);
 	string[] receive = format(buf).split('\n');
@@ -94,7 +89,9 @@ JSONValue argsToJson(string command, string[] args){
 		default:
 			break;
 	}
-	jv.object["args"] = args;
+	if(args.length != 0){
+		jv.object["args"] = args;
+	}
 	jv.toString.writeln;
 	return jv;
 }

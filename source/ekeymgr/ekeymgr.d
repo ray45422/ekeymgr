@@ -1,6 +1,8 @@
 module ekeymgr.ekeymgr;
 import core.thread;
 import std.concurrency: initOnce;
+import std.json;
+import std.algorithm: canFind;
 import ekeymgr.locker;
 import ekeymgr.net.auth;
 import ekeymgr.submodule;
@@ -56,6 +58,20 @@ bool toggle(AuthData ad){
 }
 bool isOpen(){
 	return lockManager.isOpen();
+}
+AuthData auth(JSONValue jsonAuth){
+	string[] keys = jsonAuth.object.keys;
+	if(keys.canFind("user") && keys.canFind("id")){
+		string user = jsonAuth["user"].str;
+		string id = jsonAuth["id"].str;
+		return authUserId(user, id);
+	}
+	if(keys.canFind("service") && keys.canFind("id")){
+		string service = jsonAuth["service"].str;
+		string id = jsonAuth["id"].str;
+		return authServiceId(service, id);
+	}
+	return null;
 }
 AuthData authServiceId(string service, string id){
 	Auth auth = new Auth();

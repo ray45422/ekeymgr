@@ -5,6 +5,8 @@ import ekeymgr.net.auth;
 import std.socket;
 import std.string;
 import std.getopt;
+import std.algorithm;
+import std.json;
 import core.thread;
 
 class TCPServer:Submodule{
@@ -58,29 +60,27 @@ private:
 		serviceIdAuthFlag = false;
 		auto buf = new char[255];
 		socket.receive(buf);
-		string[] args = format(buf).split;
+		string jsonStr = format(buf);
 		remoteAddress = socket.remoteAddress.toHostNameString;
 		localAddress = socket.localAddress.toHostNameString;
-		socket.send(parse(args));
+		socket.send(parse(jsonStr));
 		socket.close();
 	}
-	string parse(string[] args){
-		getopt(args,
-				config.passThrough,
-				"service-id-auth", &serviceIdAuthFlag);
-		ek.traceLog(args);
+	string parse(string jsonStr){
+		JSONValue json = parseJSON(jsonStr);
+		ek.traceLog(json);
 		ExecResult result;
 		if(remoteAddress == localAddress || remoteAddress == "127.0.0.1"){
-			result = exec(args);
+			result = exec(json);
 		}else{
-			if(args[0] == "stop"){
+			if(json["command"].str == "stop"){
 				result = new ExecResult(false, "Not allow to stop from outside.");
-			}else if(remoteAddress == ek.config.load("mySQLServerAddress") || args[0] == "status"){
-				result = exec(args);
-			}else if(args.length != 3){
+			}else if(remoteAddress == ek.config.load("mySQLServerAddress") || json["command"].str == "status"){
+				result = exec(json);
+			}else if(!json.object.keys.canFind("auth")){
 				result = new ExecResult(false, "Authentication required.");
 			}else{
-				result = exec(args);
+				result = exec(json);
 			}
 		}
 		string msg = "";
@@ -91,7 +91,6 @@ private:
 		}
 		return msg ~ result.msg;
 	}
-	Auth _auth;
 	string format(char[] buf){
 		for(int i = 0; i < buf.length; ++i){
 			if(buf[i] == 255){
@@ -102,52 +101,52 @@ private:
 		import std.conv;
 	  	return buf.to!string.chomp;
 	}
-	ExecResult exec(string[] args){
-		if(args.length == 0){
-			return new ExecResult(false, "Too few arguments;");
+	ExecResult exec(JSONValue json){
+		JSONValue authJson;
+		bool isExistAuthData = false;
+		if(json.object.keys.canFind("auth")){
+			authJson = json["auth"];
+			isExistAuthData = true;
 		}
-		switch(args[0]){
+		switch(json["command"].str){
 			case "open":
-				if(args.length == 1){
+				if(!isExistAuthData){
 					ekeymgr.open();
 					break;
 				}
-				if(args.length < 3){
-					return new ExecResult(false,"Authentication failure");
-				}
-				auto ad = auth(args);
+				auto ad = ek.auth(authJson);
 				if(ad is null){
 					return new ExecResult(false,"Authentication failure");
 				}
-				ekeymgr.open(ad);
+				if(!ekeymgr.open(ad)){
+					return new ExecResult(false, "Key operation failure");
+				}
 				break;
 			case "close":
-				if(args.length == 1){
+				if(!isExistAuthData){
 					ekeymgr.close();
 					break;
 				}
-				if(args.length < 3){
-					return new ExecResult(false,"Authentication failure");
-				}
-				auto ad = auth(args);
+				auto ad = ek.auth(authJson);
 				if(ad is null){
 					return new ExecResult(false,"Authentication failure");
 				}
-				ekeymgr.close(ad);
+				if(!ekeymgr.close(ad)){
+					return new ExecResult(false, "Key operation failure");
+				}
 				break;
 			case "toggle":
-				if(args.length == 1){
+				if(!isExistAuthData){
 					ekeymgr.toggle();
 					break;
 				}
-				if(args.length < 3){
-					return new ExecResult(false,"Authentication failure");
-				}
-				auto ad = auth(args);
+				auto ad = ek.auth(authJson);
 				if(ad is null){
 					return new ExecResult(false,"Authentication failure");
 				}
-				ekeymgr.toggle(ad);
+				if(!ekeymgr.toggle(ad)){
+					return new ExecResult(false, "Key operation failure");
+				}
 				break;
 			case "status":
 				string msg = "status:" ~ (ek.isOpen?"Open":"Close");
@@ -157,19 +156,9 @@ private:
 				ekeymgr.stop();
 				return new ExecResult(true, "stopping daemon...");
 			default:
-				return new ExecResult(false, "Unknown operation " ~ args[0]);
+				return new ExecResult(false, "Unknown operation " ~ json["command"].str);
 		}
 		return new ExecResult(true, "");
-	}
-	AuthData auth(string[] args){
-		if(args.length == 3){
-			if(serviceIdAuthFlag){
-				return ekeymgr.authServiceId(args[1], args[2]);
-			}else{
-				return ekeymgr.authUserId(args[1], args[2]);
-			}
-		}
-		return null;
 	}
 }
 class ExecResult{
