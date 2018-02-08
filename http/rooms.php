@@ -41,7 +41,8 @@ function room_table(){
 					$query = 'UPDATE rooms SET ip_address=NULL WHERE rooms.room_id='.$row["room_id"];
 					$mysqli->query($query);
 				}else{
-					socket_send($socket, "status", 6, MSG_EOF);
+					$msg = '{"command":"status"}';
+					socket_send($socket, $msg, strlen($msg), MSG_EOF);
 					socket_recv($socket, $msg, 255, MSG_WAITALL);
 					socket_close($socket);
 					if(substr($msg, 0, 1) === "0"){
