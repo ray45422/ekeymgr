@@ -106,8 +106,14 @@ private:
 		switch(json["command"].str){
 			case "open":
 				if(!isExistAuthData){
-					ekeymgr.open();
-					break;
+					if(!ekeymgr.open()){
+						result["message"] = "Key operation failure";
+						result.object["key"] = ek.keyData();
+						return result;
+					}
+					result["successful"] = true;
+					result.object["key"] = ek.keyData();
+					return result;
 				}
 				auto ad = ek.auth(authJson);
 				if(ad is null){
@@ -124,8 +130,14 @@ private:
 				return result;
 			case "close":
 				if(!isExistAuthData){
-					ekeymgr.close();
-					break;
+					if(!ekeymgr.close()){
+						result["message"] = "Key operation failure";
+						result.object["key"] = ek.keyData();
+						return result;
+					}
+					result["successful"] = true;
+					result.object["key"] = ek.keyData();
+					return result;
 				}
 				auto ad = ek.auth(authJson);
 				if(ad is null){
@@ -142,8 +154,14 @@ private:
 				return result;
 			case "toggle":
 				if(!isExistAuthData){
-					ekeymgr.toggle();
-					break;
+					if(!ekeymgr.toggle()){
+						result["message"] = "Key operation failure";
+						result.object["key"] = ek.keyData();
+						return result;
+					}
+					result["successful"] = true;
+					result.object["key"] = ek.keyData();
+					return result;
 				}
 				auto ad = ek.auth(authJson);
 				if(ad is null){
@@ -173,6 +191,5 @@ private:
 				result["message"] = "Unknown operation " ~ json["command"].str;
 				return result;
 		}
-		return result;
 	}
 }
