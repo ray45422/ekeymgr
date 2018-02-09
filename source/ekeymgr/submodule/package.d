@@ -38,7 +38,6 @@ public void stopSubmodule(){
 	}
 }
 public void onKeyEvent(ek.KeyEvent ke, AuthData ad){
-	isRunning = false;
 	foreach(ref s; submodules.original){
 		s.onKeyEvent(ke, ad);
 	}
@@ -49,6 +48,7 @@ private class SubmoduleThread: Thread{
 	Submodule submodule;
 	this(Submodule submodule){
 		this.submodule = submodule;
+		super.name(submodule.name);
 		super(&submodule.main);
 	}
 	void stop(){
