@@ -13,7 +13,6 @@ void addSubCommand(string name, SubCommand command){
 }
 int runCommandLine(string[] args){
 	import std.array;
-	args = args[1..$];
 	addPresetSubCommand();
 	string subCommand = searchSubcommand(args);
 	/* no subcommand */
@@ -47,6 +46,7 @@ int runCommandLine(string[] args){
 			"verbose+", &logLevel,
 			"v+", &logLevel);
 	ek.config.set("logLevel", logLevel);
+	args = args[1..$];
 	args = args.filter!(a => a != subCommand).array;
 	return execSubCommand(subCommand, args);
 }
@@ -60,7 +60,7 @@ private int execSubCommand(string name, string[] args){
 	return subCommands[name](args);
 }
 private string searchSubcommand(string[] args){
-	foreach(string arg; args){
+	foreach(string arg; args[1..$]){
 		if(arg[0] !=  '-'){
 			return arg;
 		}
