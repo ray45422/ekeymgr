@@ -40,6 +40,8 @@ public:
 	string name(){
 		return "TCPServer";
 	}
+	void onKeyEvent(ek.KeyEvent ke, AuthData ad){
+	}
 private:
 	Address address;
 	Socket socket;

@@ -1,6 +1,7 @@
 module nfctag.nfctag;
 import ek = ekeymgr;
 import ekeymgr.submodule;
+import ekeymgr.net.auth: AuthData;
 import std.stdio;
 import std.string;
 import core.thread;
@@ -36,6 +37,10 @@ public:
 	}
 	void stop(){
 		running = false;
+	}
+	void onKeyEvent(ek.KeyEvent ke, AuthData ad){
+		ek.traceLog(ke);
+		ek.traceLog(ad);
 	}
 	bool isLock(){
 		return !ek.isOpen();

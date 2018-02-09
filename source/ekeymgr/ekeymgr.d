@@ -95,6 +95,10 @@ AuthData authUserId(string user, string id){
 	}
 	return auth.getLastAuthData;
 }
+enum KeyEvent{
+	KEY_LOCK,
+	KEY_OPEN,
+}
 
 private LockManager lockManager(){
 	static __gshared LockManager lm;

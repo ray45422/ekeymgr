@@ -1,5 +1,7 @@
 module ekeymgr.submodule;
 public import ekeymgr.submodule.TCPServer;
+import ek = ekeymgr;
+import ekeymgr.net.auth: AuthData;
 import core.thread;
 import std.concurrency: initOnce;
 import ekeymgr.cli.log;
@@ -10,6 +12,7 @@ public:
 	void stop();
 	bool isAutoRestart();
 	string name();
+	void onKeyEvent(ek.KeyEvent, AuthData);
 }
 
 void submoduleAdd(Submodule submodule){
@@ -34,6 +37,12 @@ public void stopSubmodule(){
 		s.stop();
 	}
 }
+public void onKeyEvent(ek.KeyEvent ke, AuthData ad){
+	isRunning = false;
+	foreach(ref s; submodules.original){
+		s.onKeyEvent(ke, ad);
+	}
+}
 
 private __gshared bool isRunning;
 private class SubmoduleThread: Thread{
@@ -44,6 +53,9 @@ private class SubmoduleThread: Thread{
 	}
 	void stop(){
 		submodule.stop();
+	}
+	void onKeyEvent(ek.KeyEvent ke, AuthData ad){
+		submodule.onKeyEvent(ke, ad);
 	}
 	void autoRestart(){
 		if(!this.isRunning){
