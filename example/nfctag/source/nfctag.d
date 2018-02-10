@@ -39,8 +39,7 @@ public:
 		running = false;
 	}
 	void onKeyEvent(ek.KeyEvent ke, AuthData ad){
-		ek.traceLog(ke);
-		ek.traceLog(ad);
+		lcdUpdate();
 	}
 	bool isLock(){
 		return !ek.isOpen();
@@ -103,12 +102,7 @@ private:
 				buzzer();
 			}
 			buz.setLow();
-			string disp_name = ad.getDispname;
-			clearDisplay();
-			lcd.write(ek.isOpen?closeMsg:openMsg);
-			setPos(cast(ubyte)(16-disp_name.length),1);
-			lcd.write(disp_name);
-			ek.toggle(ad);
+		ek.toggle(ad);
 		}else{
 			clearDisplay();
 			lcd.write(failMsg);

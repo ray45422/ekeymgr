@@ -51,11 +51,15 @@ private:
 		switch(command){
 			case Command.open:
 				ret = locker.open();
-				onKeyEvent(ek.KeyEvent.KEY_OPEN, ad);
+				if(ret){
+					onKeyEvent(ek.KeyEvent.KEY_OPEN, ad);
+				}
 				break;
 			case Command.close:
 				ret = locker.close();
-				onKeyEvent(ek.KeyEvent.KEY_OPEN, ad);
+				if(ret){
+					onKeyEvent(ek.KeyEvent.KEY_OPEN, ad);
+				}
 				break;
 			case Command.toggle:
 				if(locker.isOpen){
