@@ -1,0 +1,12 @@
+{
+	"name": "open-jtalk",
+	"authors": [
+		"ray45422"
+	],
+	"dependencies": {
+		"ekeymgr": {"path": "../../"}
+	},
+	"description": "ekeymgr with open jtalk demo",
+	"copyright": "Copyright © 2018, ray45422",
+	"license": "MIT"
+}

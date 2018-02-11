@@ -1,0 +1,14 @@
+.dub
+docs.json
+__dummy.html
+docs/
+open-jtalk.so
+open-jtalk.dylib
+open-jtalk.dll
+open-jtalk.a
+open-jtalk.lib
+open-jtalk-test-*
+*.exe
+*.o
+*.obj
+*.lst
