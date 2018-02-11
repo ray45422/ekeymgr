@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+open_jtalk -x /usr/share/open-jtalk/dic/ -m /usr/share/open-jtalk/voices/mei_normal.htsvoice -ow /tmp/out.wav

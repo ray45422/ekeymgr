@@ -16,7 +16,25 @@ class JTalkModule: Submodule{
 	string name(){
 		return "JTalk";
 	}
-	void onKeyEvent(ek.KeyEvent ek, AuthData ad){
+	void onKeyEvent(ek.KeyEvent ke, AuthData ad){
+		import std.process;
+		import std.file;
+		auto pipes = pipeProcess("./jtalk", Redirect.stdin);
+		scope(exit) wait(pipes.pid);
+		if(ad is null){
+			pipes.stdin.writeln("こんにちは");
+		}else{
+			ad.write;
+			pipes.stdin.write("こんにちは、");
+			pipes.stdin.writeln(ad.getName);
+		}
+		pipes.stdin.flush();
+		pipes.stdin.close();
+		wait(pipes.pid);
+		if(!exists("/tmp/out.wav")){
+			return;
+		}
+		auto aplay = execute(["aplay", "/tmp/out.wav"]);
 	}
 }
 
