@@ -27,13 +27,14 @@ int connect(string command, string[] args, bool msgDump = false){
 	if(jsonReceive.length == 0){
 		return 1;
 	}
+	ek.traceLog(jsonReceive);
 	JSONValue result = parseJSON(jsonReceive);
-	if(result["successful"].type == JSON_TYPE.FALSE){
-		return 1;
-	}
 	auto msg = result["message"].str;
 	if(msg.length != 0){
 		msg.writeln;
+	}
+	if(result["successful"].type == JSON_TYPE.FALSE){
+		return 1;
 	}
 	return 0;
 }

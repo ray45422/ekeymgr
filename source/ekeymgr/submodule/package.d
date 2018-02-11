@@ -58,7 +58,7 @@ private class SubmoduleThread: Thread{
 		submodule.onKeyEvent(ke, ad);
 	}
 	void autoRestart(){
-		if(!this.isRunning){
+		if(!this.isRunning && submodule.isAutoRestart){
 			debugLog("restart submodule:", submodule.name);
 			this.start();
 		}
