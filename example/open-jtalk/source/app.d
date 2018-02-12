@@ -19,14 +19,18 @@ class JTalkModule: Submodule{
 	void onKeyEvent(ek.KeyEvent ke, AuthData ad){
 		import std.process;
 		import std.file;
+		import std.string;
+		string openMsgJp = ek.config.load("openMsgJp", "ようこそ");
+		string closeMsgJp = ek.config.load("closeMsgJp", "さようなら");
 		auto pipes = pipeProcess("./jtalk", Redirect.stdin);
 		scope(exit) wait(pipes.pid);
 		if(ad is null){
-			pipes.stdin.writeln("こんにちは");
+			pipes.stdin.writeln(openMsgJp);
 		}else{
 			ad.write;
-			pipes.stdin.write("こんにちは、");
-			pipes.stdin.writeln(ad.getName);
+			string[] name = ad.getName.split(" ");
+			ek.traceLog(name);
+			pipes.stdin.writeln(openMsgJp, "、", name[0], "さん");
 		}
 		pipes.stdin.flush();
 		pipes.stdin.close();
