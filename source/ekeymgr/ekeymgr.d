@@ -27,7 +27,7 @@ bool open(){
 	return lockManager.open();
 }
 bool open(AuthData ad){
-	bool ret = open();
+	bool ret = lockManager.open(ad);
 	if(!ret){
 		return ret;
 	}
@@ -38,7 +38,7 @@ bool close(){
 	return lockManager.close();
 }
 bool close(AuthData ad){
-	bool ret = close();
+	bool ret = lockManager.close(ad);
 	if(!ret){
 		return ret;
 	}
@@ -49,7 +49,7 @@ bool toggle(){
 	return lockManager.toggle();
 }
 bool toggle(AuthData ad){
-	bool ret = toggle();
+	bool ret = lockManager.toggle(ad);
 	if(!ret){
 		return ret;
 	}

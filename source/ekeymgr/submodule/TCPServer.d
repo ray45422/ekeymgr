@@ -65,6 +65,7 @@ private:
 		auto buf = new char[255];
 		socket.receive(buf);
 		string jsonStr = format(buf);
+		ek.traceLog(jsonStr);
 		remoteAddress = socket.remoteAddress.toHostNameString;
 		localAddress = socket.localAddress.toHostNameString;
 		socket.send(parse(jsonStr));
