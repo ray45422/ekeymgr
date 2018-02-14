@@ -102,7 +102,12 @@ private:
 				buzzer();
 			}
 			buz.setLow();
-		ek.toggle(ad);
+			string disp_name = ad.getDispname;
+			clearDisplay();
+			lcd.write(ek.isOpen?closeMsg:openMsg);
+			setPos(cast(ubyte)(16 - disp_name.length), 1);
+			lcd.write(disp_name);
+			ek.toggle(ad);
 		}else{
 			clearDisplay();
 			lcd.write(failMsg);
