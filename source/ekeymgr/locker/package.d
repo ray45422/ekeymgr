@@ -62,10 +62,11 @@ private:
 				}
 				break;
 			case Command.toggle:
+				lock = false;
 				if(locker.isOpen){
-					ret = locker.close();
+					ret = commandExec(Command.close, ad);
 				}else{
-					ret = locker.open();
+					ret = commandExec(Command.open, ad);
 				}
 				break;
 			default:
