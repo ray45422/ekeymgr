@@ -36,8 +36,10 @@ private:
 		import std.string;
 		string openMsgJp = ek.config.load("openMsgJp", "ようこそ");
 		string closeMsgJp = ek.config.load("closeMsgJp", "さようなら");
-		auto pipes = pipeProcess("./jtalk", Redirect.stdin);
+		ek.traceLog("jtalk start");
+		auto pipes = pipeProcess("jtalk", Redirect.stdin);
 		scope(exit) wait(pipes.pid);
+		ek.traceLog("jtalk process start");
 		if(ad is null){
 			pipes.stdin.writeln(openMsgJp);
 			ek.traceLog("no auth data");
