@@ -44,6 +44,7 @@ private:
 	};
 	bool commandExec(Command command, AuthData ad){
 		if(lock){
+			ek.debugLog("key is working now");
 			return false;
 		}
 		lock = true;

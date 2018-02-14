@@ -39,7 +39,7 @@ public void stopSubmodule(){
 }
 public void onKeyEvent(ek.KeyEvent ke, AuthData ad){
 	foreach(ref s; submodules.original){
-		ek.traceLog("submodule onKeyEvnet", s.name);
+		ek.traceLog("onKeyEvent call", s.name);
 		s.onKeyEvent(ke, ad);
 	}
 }

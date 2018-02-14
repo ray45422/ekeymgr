@@ -41,8 +41,6 @@ public:
 		return "TCPServer";
 	}
 	void onKeyEvent(ek.KeyEvent ke, AuthData ad){
-		ek.traceLog(ke);
-		ek.traceLog(ad);
 	}
 private:
 	Address address;
