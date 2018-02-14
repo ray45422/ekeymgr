@@ -1,4 +1,4 @@
-module openjtalk.jtalk;
+module nfctag.jtalk;
 import ek = ekeymgr;
 import ekeymgr.submodule;
 import ekeymgr.net.auth;
@@ -36,18 +36,24 @@ private:
 		import std.string;
 		string openMsgJp = ek.config.load("openMsgJp", "ようこそ");
 		string closeMsgJp = ek.config.load("closeMsgJp", "さようなら");
+		string msg;
+		if(ke.KEY_OPEN){
+			msg = openMsgJp;
+		}else if(ke.KEY_OPEN){
+			msg = closeMsgJp;
+		}
 		ek.traceLog("jtalk start");
 		auto pipes = pipeProcess("jtalk", Redirect.stdin);
 		scope(exit) wait(pipes.pid);
 		ek.traceLog("jtalk process start");
 		if(ad is null){
-			pipes.stdin.writeln(openMsgJp);
+			pipes.stdin.writeln(msg);
 			ek.traceLog("no auth data");
 		}else{
 			ad.write;
 			string[] name = ad.getName.split(" ");
 			ek.traceLog(name);
-			pipes.stdin.writeln(openMsgJp, "、", name[0], "さん");
+			pipes.stdin.writeln(msg, "、", name[0], "さん");
 		}
 		pipes.stdin.flush();
 		pipes.stdin.close();
