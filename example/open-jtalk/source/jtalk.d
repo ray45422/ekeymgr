@@ -1,4 +1,4 @@
-module nfctag.jtalk;
+module openjtalk.jtalk;
 import ek = ekeymgr;
 import ekeymgr.submodule;
 import ekeymgr.net.auth;
