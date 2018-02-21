@@ -1,6 +1,7 @@
 module nfctag.nfctag;
 import ek = ekeymgr;
 import ekeymgr.submodule;
+import ekeymgr.net.auth: AuthData;
 import std.stdio;
 import std.string;
 import core.thread;
@@ -36,6 +37,9 @@ public:
 	}
 	void stop(){
 		running = false;
+	}
+	void onKeyEvent(ek.KeyEvent ke, AuthData ad){
+		lcdUpdate();
 	}
 	bool isLock(){
 		return !ek.isOpen();
@@ -101,7 +105,7 @@ private:
 			string disp_name = ad.getDispname;
 			clearDisplay();
 			lcd.write(ek.isOpen?closeMsg:openMsg);
-			setPos(cast(ubyte)(16-disp_name.length),1);
+			setPos(cast(ubyte)(16 - disp_name.length), 1);
 			lcd.write(disp_name);
 			ek.toggle(ad);
 		}else{

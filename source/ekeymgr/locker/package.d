@@ -1,4 +1,7 @@
 module ekeymgr.locker;
+import ek = ekeymgr;
+import ekeymgr.net.auth: AuthData;
+import ekeymgr.submodule;
 
 interface Locker{
 	void setup();
@@ -18,14 +21,14 @@ public:
 	void stop(){
 		locker.stop();
 	}
-	bool open(){
-		return commandExec(Command.open);
+	bool open(AuthData ad = null){
+		return commandExec(Command.open, ad);
 	}
-	bool close(){
-		return commandExec(Command.close);
+	bool close(AuthData ad = null){
+		return commandExec(Command.close, ad);
 	}
-	bool toggle(){
-		return commandExec(Command.toggle);
+	bool toggle(AuthData ad = null){
+		return commandExec(Command.toggle, ad);
 	}
 	bool isOpen(){
 		return locker.isOpen();
@@ -39,8 +42,9 @@ private:
 		close,
 		toggle
 	};
-	bool commandExec(Command command){
+	bool commandExec(Command command, AuthData ad){
 		if(lock){
+			ek.debugLog("key is working now");
 			return false;
 		}
 		lock = true;
@@ -48,9 +52,15 @@ private:
 		switch(command){
 			case Command.open:
 				ret = locker.open();
+				if(ret){
+					onKeyEvent(ek.KeyEvent.KEY_OPEN, ad);
+				}
 				break;
 			case Command.close:
 				ret = locker.close();
+				if(ret){
+					onKeyEvent(ek.KeyEvent.KEY_CLOSE, ad);
+				}
 				break;
 			case Command.toggle:
 				lock = false;
