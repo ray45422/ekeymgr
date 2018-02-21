@@ -35,6 +35,11 @@ public void stopSubmodule(){
 	}
 }
 
+extern(C) nothrow @system @nogc
+public void sigStop(int signal){
+	isRunning = false;
+}
+
 private __gshared bool isRunning;
 private class SubmoduleThread: Thread{
 	Submodule submodule;

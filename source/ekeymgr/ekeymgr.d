@@ -1,5 +1,6 @@
 module ekeymgr.ekeymgr;
 import core.thread;
+import core.stdc.signal;
 import std.concurrency: initOnce;
 import std.json;
 import std.algorithm: canFind;
@@ -10,6 +11,7 @@ import ekeymgr.cli.log;
 import config = ekeymgr.config;
 
 void start(){
+	signal(SIGINT, &sigStop);
 	config.init();
 	lockManager.setup();
 	submoduleAdd(new ekeymgr.submodule.TCPServer.TCPServer());
