@@ -38,9 +38,11 @@ public void stopSubmodule(){
 	}
 }
 public void onKeyEvent(ek.KeyEvent ke, AuthData ad){
+	import std.parallelism;
 	foreach(ref s; submodules.original){
 		ek.traceLog("onKeyEvent call", s.name);
-		s.onKeyEvent(ke, ad);
+		auto eventTask = task(&s.onKeyEvent, ke, ad);
+		eventTask.executeInNewThread();
 	}
 }
 
