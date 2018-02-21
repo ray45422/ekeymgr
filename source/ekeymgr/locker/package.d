@@ -58,7 +58,7 @@ private:
 			case Command.close:
 				ret = locker.close();
 				if(ret){
-					onKeyEvent(ek.KeyEvent.KEY_OPEN, ad);
+					onKeyEvent(ek.KeyEvent.KEY_CLOSE, ad);
 				}
 				break;
 			case Command.toggle:

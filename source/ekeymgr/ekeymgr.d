@@ -96,7 +96,7 @@ AuthData authUserId(string user, string id){
 	return auth.getLastAuthData;
 }
 enum KeyEvent{
-	KEY_LOCK,
+	KEY_CLOSE,
 	KEY_OPEN,
 }
 
