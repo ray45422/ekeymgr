@@ -11,7 +11,7 @@ import ekeymgr.cli.log;
 import config = ekeymgr.config;
 
 void start(){
-	signal(SIGINT, &sigStop);
+	signal(SIGTERM, &sigStop);
 	config.init();
 	lockManager.setup();
 	submoduleAdd(new ekeymgr.submodule.TCPServer.TCPServer());
