@@ -63,7 +63,7 @@ bool isOpen(){
 }
 JSONValue keyData(){
 	JSONValue jv = ["isOpen": isOpen];
-	jv.object["roomName"] = config.load("roomName", "");
+	jv.object["roomName"] = config.load("room_name", "");
 	jv.object["roomID"] = config.load!int("room_id");
 	return jv;
 }
