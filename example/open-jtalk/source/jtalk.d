@@ -37,9 +37,9 @@ private:
 		string openMsgJp = ek.config.load("openMsgJp", "ようこそ");
 		string closeMsgJp = ek.config.load("closeMsgJp", "さようなら");
 		string msg;
-		if(ke.KEY_OPEN){
+		if(ke == ek.KeyEvent.KEY_OPEN){
 			msg = openMsgJp;
-		}else if(ke.KEY_OPEN){
+		}else{
 			msg = closeMsgJp;
 		}
 		ek.traceLog("jtalk start");
@@ -62,6 +62,6 @@ private:
 			ek.traceLog("file not exist");
 			return;
 		}
-		auto aplay = execute(["aplay", "/tmp/out.wav"]);
+		auto aplay = execute("jtalk-play");
 	}
 }
